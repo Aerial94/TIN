@@ -1,0 +1,1 @@
+# TIN Projekt - dokumentacja wstępna
