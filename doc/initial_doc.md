@@ -50,9 +50,11 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 - UDPSocket
 - HTTPServer
 - HTTPWorker
+- HTTPPacket
 - Database
 - DNSPacket
 - DNSPooler
+- Logger
 
 ### Schemat działania
 #### Zapytanie do serwera http
@@ -148,7 +150,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 //nie odpowiada na zapytania
 {"domain":"github.com", "staus": "unknown"} //domena jest znana na serwerze ale
 //nie była jeszcze odpytywana lub konfiguracja siecowa serwera uniemożliwia jej
-//odbieranie
+//odpytanie
 ]
 }
 ```
@@ -201,3 +203,9 @@ działanie w oczekiwaniu na pojawienie się połączenia
 w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
 - przepełnienie kolejki podłączonych użytkowniów oczekujących na obsługę -
 informacja o tym zostaje dodana do logów
+
+## Format logów
+```
+DATA CZAS WAŻNOŚĆ\_LOGU NAZWA_MODUŁU NAZWA\_BŁĘDU OPIS
+WAŻNOŚĆ\_LOGU => INFO | DEBUG | WARNING
+```
