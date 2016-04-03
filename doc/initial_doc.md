@@ -37,11 +37,21 @@ Kluczowe elementy programu zostaną przetestowane za pomocą biblioteki
 wspomagającej testy jednstkowe w C++ [Catch](https://github.com/philsquared/Catch)
 
 ## Zakładana funkcjonalność
+- śledzenie dostępności wskazanych domen
+- możliwość dodawania nowych domen do śledzenienia za pomocą zatania HTTP
+- możliwość pobierania statusu domen przez zapytania HTTP
+- możledzenie usuwania domen ze zbioru śledzionych za pomocą zapytania HTTP
 
 ## Architektura programu
 
 ### Lista podstawowych klas/obiektów
-
+- TCPSocket
+- UDPSocket
+- HTTPServer
+- HTTPWorker
+- Database
+- DNSPacket
+- DNSPooler
 
 ### Schemat działania
 #### Zapytanie do serwera http
@@ -87,6 +97,20 @@ DnsClient ++> Database
 [o O o O o] - kolejka synchronizowana
 ```
 
+### Przykłady zapytań JSON
+#### Dodanie nowego serwera/serwerów
+```js
+{"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]}
+```
+#### Dodanie usunięcie serwera/serwerów
+```js
+{"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]}
+```
+#### Odpytanie o status serwerów
+```js
+{"command":"query", "domains": ["google.com", "elka.pw.edu.pl"]}
+```
+
 ## Sposób instalacji
 ### Budowanie ze źródeł
 #### Ubuntu 14.04
@@ -127,9 +151,11 @@ paramerów i pliku konfiguracyjnego zapewni biblioteka  Boost.Program\_options.
 ## Sytuacje wyjątkowe
 
 - próba wykonania operacji bind dla uprzywilejowanego numeru portu bez uprawnień
-użytkownika root
+użytkownika root, program kończy działanie w wyniku tego błędu
 - brak dostępu do internetu dla interfejsu sieciowego wybranego do odpytywania
-serwerów DNS
+serwerów DNS - następuje dodanie wpisu do logu, program kontynuje swoje
+działanie w oczekiwaniu na pojawienie się połączenia
 - nieprawidłowe zapytanie do serwera http (nieprawidłowe nagłówki http lub dane
-w json
-- przepełnienie kolejki podłączonych użytkowniów oczekujących na obsługę
+w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
+- przepełnienie kolejki podłączonych użytkowniów oczekujących na obsługę -
+informacja o tym zostaje dodana do logów
