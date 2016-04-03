@@ -206,6 +206,6 @@ informacja o tym zostaje dodana do logów
 
 ## Format logów
 ```
-DATA CZAS WAŻNOŚĆ\_LOGU NAZWA_MODUŁU NAZWA\_BŁĘDU OPIS
-WAŻNOŚĆ\_LOGU => INFO | DEBUG | WARNING
+DATA CZAS WAŻNOŚĆ_LOGU NAZWA_MODUŁU NAZWA_BŁĘDU OPIS
+WAŻNOŚĆ_LOGU => INFO | DEBUG | WARNING
 ```
