@@ -34,13 +34,14 @@ Makefile w przypadku spełnienia zależności.
 
 ### Testowanie
 Kluczowe elementy programu zostaną przetestowane za pomocą biblioteki
-wspomagającej testy jednstkowe w C++ [Catch](https://github.com/philsquared/Catch)
+wspomagającej testy jednstkowe w C++ [Catch](https://github.com/philsquared/Catch).
+Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 
 ## Zakładana funkcjonalność
 - śledzenie dostępności wskazanych domen
 - możliwość dodawania nowych domen do śledzenienia za pomocą zatania HTTP
 - możliwość pobierania statusu domen przez zapytania HTTP
-- możledzenie usuwania domen ze zbioru śledzionych za pomocą zapytania HTTP
+- możliwość usuwania domen ze zbioru śledzionych za pomocą zapytania HTTP
 
 ## Architektura programu
 
@@ -71,23 +72,29 @@ wspomagającej testy jednstkowe w C++ [Catch](https://github.com/philsquared/Cat
     ```
 
 #### Odpytanie serwerów DNS
-```
-DnsClient <++ Database - klient odczytuje z bazy danych domen informacje o
-                         domenie którą ma w danej chwili zbadać.
+1. klient odczytuje z bazy danych domen informacje o domenie którą ma w danej
+   chwili zbadać
+   ```
+   DnsClient <++ Database
+   ```
+2. klient zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
+   wszystkie poziomy hierarchi dns
+   ```
+   RootDnsServer <---- DnsClient
+   RootDnsServer ----> DnsClient
+   TopLevelDnsServer <---- DnsClient
+   TopLevelDnsServer ----> DnsClient
+   SecondLevelDnsServer <---- DnsClient
+   SecondLevelDnsServer ----> DnsClient
+   ...
+   DomainDnsServer <---- DnsClient
+   DomainLevelDnsServer ----> DnsClient
+   ```
 
-RootDnsServer <---- DnsClient - klient zaczyna odpytywanie od jednego z root
-                                serwerów
-RootDnsServer ----> DnsClient
-TopLevelDnsServer <---- DnsClient
-TopLevelDnsServer ----> DnsClient
-SecondLevelDnsServer <---- DnsClient
-SecondLevelDnsServer ----> DnsClient
-...
-DomainDnsServer <---- DnsClient
-DomainLevelDnsServer ----> DnsClient
-
-DnsClient ++> Database
-```
+3. klient zapisuje wynik odpytania do bazy danych
+   ```
+   DnsClient ++> Database
+   ```
 
 #### Legenda do oznaczeń
 ```
@@ -102,13 +109,48 @@ DnsClient ++> Database
 ```js
 {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]}
 ```
+##### Odpowiedź
+```js
+{"task": {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]},
+"result": [
+{"domain":"google.com", "status":"ok"},
+{"domain":"elka.pw.edu.pl", "staus": "ok"}
+]
+}
+```
 #### Dodanie usunięcie serwera/serwerów
 ```js
 {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]}
 ```
+##### Odpowiedź
+```js
+{"task": {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]},
+"result": [
+{"domain":"google.com", "status":"ok"},
+{"domain":"elka.pw.edu.pl", "staus": "no_in_database"} //próba usunięcia domeny
+//która nie była na serwerze
+]
+}
+```
 #### Odpytanie o status serwerów
 ```js
-{"command":"query", "domains": ["google.com", "elka.pw.edu.pl"]}
+{"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl", "github.com"]}
+```
+##### Odpowiedź
+```js
+{"task": {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl"]},
+"result": [
+{"domain":"google.com", "status":"ok"},  //domena jest znana na serwerze
+//i odpowiada na zapytania
+{"domain":"elka.pw.edu.pl", "staus": "no_in_database"} // domena jest niezanana
+//na serwerze
+{"domain":"wp.pl", "staus": "unreachable"} //domena jest znana na serwerze ale
+//nie odpowiada na zapytania
+{"domain":"github.com", "staus": "unknown"} //domena jest znana na serwerze ale
+//nie była jeszcze odpytywana lub konfiguracja siecowa serwera uniemożliwia jej
+//odbieranie
+]
+}
 ```
 
 ## Sposób instalacji
