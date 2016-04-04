@@ -1,5 +1,5 @@
 # TIN Projekt
-## DNS Wrangler - cykliczny analizator dostępności domen
+## Domain Checker - Cykliczny analizator dostępności domen
 ## Dokumentacja wstępna
 
 #### Skład zespołu projektowego
@@ -171,7 +171,7 @@ make
 ```bash
 cd TIN
 cd build
-./dns-wrangler [parametry]
+./domain-checker [parametry]
 ```
 
 ## Zmiana parametrów programu
