@@ -63,7 +63,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
    powierzone przez użytkownia zadania. Dostęp do kolejki zadań jest
    synchronizowany semaforem.
     ```
-    Client *****> HttpServer ++> [o O o O o] ++> HttpHendler
+    Client *****> HttpServer ++> [o O o O o] ++> HttpWorker
     ```
 
 2. wątek obsługujący odpytuje bazę danych domen w poszukiwaniu informacje o
@@ -162,7 +162,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 ### Budowanie ze źródeł
 #### Ubuntu 14.04
 ```bash
-sudo apt-get install cmake libjsoncpp git build-essential
+sudo apt-get install cmake libjsoncpp git build-essential libboost-all-dev
 git clone https://github.com/Aerial94/TIN
 cd TIN
 mkdir build
