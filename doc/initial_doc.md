@@ -80,7 +80,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
     DnsClient <++ Database
     ```
 2. klient zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
-   wszystkie poziomy hierarchi dns
+   wszystkie poziomy hierarchi DNS
     ```
     RootDnsServer <---- DnsClient
     RootDnsServer ----> DnsClient
@@ -181,12 +181,12 @@ cd build
 W programie będzie można skonfigurować następujące parametry:
 
 - adres interfejsu sieciowego na którym będzie nasłuchiwał serwer http (lub *
-oznaczająca wszystkie interfejsy INADDR\_ANY)
+oznaczająca wszystkie interfejsy - INADDR\_ANY)
 - port na którym będzie dostępna usługa http
 - adres interfejsu sieciowego przez który będziemy wysyłać zapytania DNS
 - domyślny interwał pomiędzy cyklicznymi odpytaniami serwerów DNS o domenę
-- domyślny timeout na przysłanie danych od kilena do serwera http po rozpoczęciu
-obsługi
+- domyślny timeout na przysłanie danych od kliena do serwera http po rozpoczęciu
+obsługi (aby nie zabierać zasobów przez "wiszące" połączenia)
 - maksymalna ilość wątków HttpHendler obsługujących klientów serwera http
 - maksymalna długość kolejki użytkowników oczekujących na obsługę przez jeden z
 wątków HttpHendler
