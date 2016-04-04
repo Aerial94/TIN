@@ -74,28 +74,28 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
     ```
 
 #### Odpytanie serwerów DNS
-1. klient odczytuje z bazy danych domen informacje o domenie którą ma w danej
+1. DnsPooler odczytuje z bazy danych domen informacje o domenie którą ma w danej
    chwili zbadać
     ```
-    DnsClient <++ Database
+    DnsPooler <++ Database
     ```
-2. klient zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
+2. DnsPooler zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
    wszystkie poziomy hierarchi DNS
     ```
-    RootDnsServer <---- DnsClient
-    RootDnsServer ----> DnsClient
-    TopLevelDnsServer <---- DnsClient
-    TopLevelDnsServer ----> DnsClient
-    SecondLevelDnsServer <---- DnsClient
-    SecondLevelDnsServer ----> DnsClient
+    RootDnsServer <---- DnsPooler
+    RootDnsServer ----> DnsPooler
+    TopLevelDnsServer <---- DnsPooler
+    TopLevelDnsServer ----> DnsPooler
+    SecondLevelDnsServer <---- DnsPooler
+    SecondLevelDnsServer ----> DnsPooler
     ...
-    DomainLevelDnsServer <---- DnsClient
-    DomainLevelDnsServer ----> DnsClient
+    DomainLevelDnsServer <---- DnsPooler
+    DomainLevelDnsServer ----> DnsPooler
     ```
 
-3. klient zapisuje wynik odpytania do bazy danych
+3. DnsPooler zapisuje wynik odpytania do bazy danych
     ```
-    DnsClient ++> Database
+    DnsPooler ++> Database
     ```
 
 #### Legenda do oznaczeń
