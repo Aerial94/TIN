@@ -58,7 +58,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 
 ### Schemat działania
 #### Zapytanie do serwera http
-1. klient wysyła żądanie do serwera http. Umeszcza on zapytanie w kolejce do
+1. klient wysyła żądanie do serwera http. Umieszcza on zapytanie w kolejce do
    obsłużenia. Któryś z wątków obsługujących odbiera zapytanie i realizuje
    powierzone przez użytkownia zadania. Dostęp do kolejki zadań jest
    synchronizowany semaforem.
@@ -76,27 +76,27 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 #### Odpytanie serwerów DNS
 1. klient odczytuje z bazy danych domen informacje o domenie którą ma w danej
    chwili zbadać
-   ```
-   DnsClient <++ Database
-   ```
+    ```
+    DnsClient <++ Database
+    ```
 2. klient zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
    wszystkie poziomy hierarchi dns
-   ```
-   RootDnsServer <---- DnsClient
-   RootDnsServer ----> DnsClient
-   TopLevelDnsServer <---- DnsClient
-   TopLevelDnsServer ----> DnsClient
-   SecondLevelDnsServer <---- DnsClient
-   SecondLevelDnsServer ----> DnsClient
-   ...
-   DomainDnsServer <---- DnsClient
-   DomainLevelDnsServer ----> DnsClient
-   ```
+    ```
+    RootDnsServer <---- DnsClient
+    RootDnsServer ----> DnsClient
+    TopLevelDnsServer <---- DnsClient
+    TopLevelDnsServer ----> DnsClient
+    SecondLevelDnsServer <---- DnsClient
+    SecondLevelDnsServer ----> DnsClient
+    ...
+    DomainLevelDnsServer <---- DnsClient
+    DomainLevelDnsServer ----> DnsClient
+    ```
 
 3. klient zapisuje wynik odpytania do bazy danych
-   ```
-   DnsClient ++> Database
-   ```
+    ```
+    DnsClient ++> Database
+    ```
 
 #### Legenda do oznaczeń
 ```
@@ -114,10 +114,11 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 ##### Odpowiedź
 ```js
 {"task": {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]},
-"result": [
-{"domain":"google.com", "status":"ok"},
-{"domain":"elka.pw.edu.pl", "staus": "ok"}
-]
+"result":
+    [
+        {"domain":"google.com", "status":"ok"},
+        {"domain":"elka.pw.edu.pl", "staus": "ok"}
+    ]
 }
 ```
 #### Dodanie usunięcie serwera/serwerów
@@ -127,11 +128,12 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 ##### Odpowiedź
 ```js
 {"task": {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]},
-"result": [
-{"domain":"google.com", "status":"ok"},
-{"domain":"elka.pw.edu.pl", "staus": "no_in_database"} //próba usunięcia domeny
-//która nie była na serwerze
-]
+"result":
+    [
+        {"domain":"google.com", "status":"ok"},
+        {"domain":"elka.pw.edu.pl", "staus": "no_in_database"} //próba usunięcia
+        //domeny która nie była na serwerze
+    ]
 }
 ```
 #### Odpytanie o status serwerów
@@ -141,17 +143,18 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 ##### Odpowiedź
 ```js
 {"task": {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl"]},
-"result": [
-{"domain":"google.com", "status":"ok"},  //domena jest znana na serwerze
-//i odpowiada na zapytania
-{"domain":"elka.pw.edu.pl", "staus": "no_in_database"} // domena jest niezanana
-//na serwerze
-{"domain":"wp.pl", "staus": "unreachable"} //domena jest znana na serwerze ale
-//nie odpowiada na zapytania
-{"domain":"github.com", "staus": "unknown"} //domena jest znana na serwerze ale
-//nie była jeszcze odpytywana lub konfiguracja siecowa serwera uniemożliwia jej
-//odpytanie
-]
+"result":
+    [
+        {"domain":"google.com", "status":"ok"},  //domena jest znana na serwerze
+        //i odpowiada na zapytania
+        {"domain":"elka.pw.edu.pl", "staus": "no_in_database"} // domena jest
+        //niezanana na serwerze
+        {"domain":"wp.pl", "staus": "unreachable"} //domena jest znana na
+        //serwerze ale nie odpowiada na zapytania
+        {"domain":"github.com", "staus": "unknown"} //domena jest znana
+        //na serwerze ale nie była jeszcze odpytywana lub konfiguracja siecowa
+        //serwera uniemożliwia jej odpytanie
+    ]
 }
 ```
 
@@ -191,6 +194,8 @@ wątków HttpHendler
 Parametry będą konfigurowalne poprzez plik cfg i parametry programu. Parametry
 programu będą miały wyższy priorytet niż plik konfiguracyjny. Parsowanie
 paramerów i pliku konfiguracyjnego zapewni biblioteka  Boost.Program\_options.
+W tym momencie parametry są podane jedynie opisowo, bez podowania ich nazw.
+Ostateczny zbiór parametrów zostanie ustalonych w trakcie implementacji.
 
 ## Sytuacje wyjątkowe
 
