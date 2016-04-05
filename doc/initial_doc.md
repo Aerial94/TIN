@@ -57,20 +57,9 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 
 ### Schemat działania
 #### Zapytanie do serwera http
-1. klient wysyła żądanie do serwera http. Umieszcza on zapytanie w kolejce do
-   obsłużenia. Któryś z wątków obsługujących odbiera zapytanie i realizuje
-   powierzone przez użytkownika zadania. Dostęp do kolejki zadań jest
-   synchronizowany semaforem.
-    ```
-    Client *****> HttpServer ++> [o O o O o] ++> HttpWorker
-    ```
 
-2. wątek obsługujący odpytuje bazę danych domen w poszukiwaniu informacje o
-   zadanej domenie.  Do klienta zostaje przesłana informacja o dostępności
-   domeny lub jej braku.
-    ```
-    Client <***** HttpHendler <++ Database
-    ```
+![alt text](graph.svg "Logo Title Text 1")
+
 
 #### Odpytanie serwerów DNS
 1. DnsPooler odczytuje z bazy danych domen informacje o domenie którą ma w danej
@@ -222,7 +211,7 @@ działanie w oczekiwaniu na pojawienie się połączenia
 w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
 - przepełnienie kolejki podłączonych użytkowników oczekujących na obsługę -
 informacja o tym zostaje dodana do logów
-- nie odnalezienie plik konfiguracyjnego w katalogu w którym jest program -
+- nieodnalezienie plik konfiguracyjnego w katalogu w którym jest program -
 aplikacja kończy działanie wypisując komunikat o braku pliku konfiguracyjnego
 
 ## Format logów

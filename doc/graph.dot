@@ -1,0 +1,135 @@
+digraph G {
+        fontname = "Bitstream Vera Sans"
+        fontsize = 8
+        ordering=out
+        overlap = scale;
+
+        node [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                shape = "record"
+                nodesep=5.0
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+        ]
+
+        HTTPServer [
+                label = "{HTTPServer}"
+                color = "#97007C"
+                style = "bold"
+        ]
+
+        Database [
+                label = "Database"
+        ]
+
+        Client[
+                label = "{Client}"
+        ]
+
+        HTTPHandler[
+                label = "{HTTPHandler}"
+        ]
+
+        Client2[
+                label = "{Client2}"
+                style="dotted"
+        ]
+        HTTPHandler2[
+                label = "{HTTPHandler2}"
+                style="dotted"
+        ]
+        Client3[
+                label = "{Client3}"
+                style="dotted"
+        ]
+        HTTPHandler3[
+                label = "{HTTPHandler3}"
+                style="dotted"
+        ]
+        subgraph cluster_1 {
+            label = "HTTP"
+        graph[style=dotted];
+        Client2 -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
+        Client3 -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
+        HTTPHandler2 -> Client2 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
+        HTTPHandler3 -> Client3 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
+        HTTPServer -> HTTPHandler2 [label = "tworzy nowy wątek"]
+        Client -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
+        HTTPHandler -> Client [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
+        HTTPServer -> HTTPHandler [label = "tworzy nowy wątek"]
+        HTTPServer -> HTTPHandler3 [label = "tworzy nowy wątek"]
+        }
+        Database -> HTTPHandler[label="odczytuje z bazy danych" style =
+        "solid", color="red"]
+        Database -> HTTPHandler2 [label="odczytuje z bazy danych" style =
+        "solid", color="red"]
+        Database -> HTTPHandler3 [label="odczytuje z bazy danych" style =
+        "solid", color="red"]
+
+        DNSPooler[
+                label = "{DNSPooler}"
+                style="solid"
+                color="#08CD56"
+                style = "bold"
+        ]
+        DNSPooler -> Database [label="zapisuje do Bazy Danych" style =
+        "solid", color="red"]
+
+        RootDNSServer[
+                label = "RootDNSServer"
+                style="solid"
+                color="#FF8D00"
+                style = "rounded"
+        ]
+        TopLevelDNSServer[
+                label = "TopLevelDNSServer"
+                style="solid"
+                color="#FF0035"
+                style = "rounded"
+        ]
+        SecondLevelDNSServer[
+                label = "SecondLevelDNSServer"
+                style="solid"
+                color="#FF00CF"
+                style = "rounded"
+        ]
+        NthLevelDNSServer[
+                label = "NthLevelDNSServer"
+                style="dashed"
+                color="#7900FF"
+                style = "rounded"
+        ]
+        DomainLevelDNSServer[
+                label = "DomainLevelDNSServer"
+                style="solid"
+                color="#004EFF"
+                style = "rounded"
+        ]
+        subgraph cluster_0 {
+            label = "DNS"
+        graph[style=dotted];
+        RootDNSServer -> TopLevelDNSServer [style="dotted"
+        color="#00FFE8"]
+        TopLevelDNSServer -> SecondLevelDNSServer [style="dotted"
+        color="#00FFE8"]
+        SecondLevelDNSServer -> NthLevelDNSServer [style="dotted"
+        color="#00FFE8"]
+        NthLevelDNSServer -> DomainLevelDNSServer [style="dotted"
+        color="#00FFE8"]
+        DNSPooler -> RootDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        RootDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
+        DNSPooler -> TopLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        TopLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
+        DNSPooler -> SecondLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        SecondLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
+        DNSPooler -> NthLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        NthLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
+        DNSPooler -> DomainLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        DomainLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="#FF1900"]
+ }
+}
+
