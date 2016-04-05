@@ -24,7 +24,6 @@ klasy std::mutex (obie klasy pochodzą ze standardu C++11).
 
 ##### Spis bibliotek pomocniczych
 - [jsoncpp](https://github.com/open-source-parsers/jsoncpp) - parser json
-- [Boost.Program\_options](http://www.boost.org/doc/libs/1_58_0/doc/html/program_options.html) - obsługa parametrów
 - [Catch](https://github.com/philsquared/Catch) - testowanie
 
 ### Budowanie
@@ -162,7 +161,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 ### Budowanie ze źródeł
 #### Ubuntu 14.04
 ```bash
-sudo apt-get install cmake libjsoncpp git build-essential libboost-all-dev
+sudo apt-get install cmake libjsoncpp git build-essential
 git clone https://github.com/Aerial94/TIN
 cd TIN
 mkdir build
@@ -187,15 +186,30 @@ oznaczająca wszystkie interfejsy - INADDR\_ANY)
 - domyślny interwał pomiędzy cyklicznymi odpytaniami serwerów DNS o domenę
 - domyślny timeout na przysłanie danych od klienta do serwera http po rozpoczęciu
 obsługi (aby nie zabierać zasobów przez "wiszące" połączenia)
-- maksymalna ilość wątków HttpHendler obsługujących klientów serwera http
-- maksymalna długość kolejki użytkowników oczekujących na obsługę przez jeden z
-wątków HttpHendler
+- maksymalna ilość wątków HttpHandler obsługujących klientów serwera http
 
-Parametry będą konfigurowalne poprzez plik cfg i parametry programu. Parametry
-programu będą miały wyższy priorytet niż plik konfiguracyjny. Parsowanie
-parametrów i pliku konfiguracyjnego zapewni biblioteka  Boost.Program\_options.
-W tym momencie parametry są podane jedynie opisowo, bez podawania ich nazw.
-Ostateczny zbiór parametrów zostanie ustalonych w trakcie implementacji.
+Program będzie konfigurowany poprzez plik cfg w formacie json. Podczas
+uruchamiania plik ten będzie musiał być umieszczony w tym samym katalogu co
+program.
+
+### Przykładowy plik konfiguracyjny
+```js
+{ "http": {
+    "server" : {
+        "address" : "127.0.0.1",
+        "port" : "8080"
+    },
+    "readTimeout" : "60", //timeout 1 minuta
+    "maxThreads" : "10"
+    }
+    "dns" : {
+        "pooler" : {
+            "address" : "127.0.0.1",
+            "interval" : "600" //odpytanie co 10 minut
+        }
+    }
+}
+```
 
 ## Sytuacje wyjątkowe
 
@@ -208,6 +222,8 @@ działanie w oczekiwaniu na pojawienie się połączenia
 w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
 - przepełnienie kolejki podłączonych użytkowników oczekujących na obsługę -
 informacja o tym zostaje dodana do logów
+- nie odnalezienie plik konfiguracyjnego w katalogu w którym jest program -
+aplikacja kończy działanie wypisując komunikat o braku pliku konfiguracyjnego
 
 ## Format logów
 ```
