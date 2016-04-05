@@ -17,7 +17,7 @@
 > wykorzystaniem protokołu HTTP i notacji/składni JSON.
 
 ## Środowisko
-Serwer będzie działał w środowsku systemu Linux. Do implementacji będzie użyty
+Serwer będzie działał w środowisku systemu Linux. Do implementacji będzie użyty
 język C++11. Obsługa wątków będzie zrealizowana za pomocą klasy std::thread.
 Synchronizacja w dostępie do danych współdzielonych będzie odbywać się za pomocą
 klasy std::mutex (obie klasy pochodzą ze standardu C++11).
@@ -34,14 +34,14 @@ Makefile w przypadku spełnienia zależności.
 
 ### Testowanie
 Kluczowe elementy programu zostaną przetestowane za pomocą biblioteki
-wspomagającej testy jednstkowe w C++ [Catch](https://github.com/philsquared/Catch).
-Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
+wspomagającej testy jednostkowe w C++ [Catch](https://github.com/philsquared/Catch).
+Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie.
 
 ## Zakładana funkcjonalność
 - śledzenie dostępności wskazanych domen
-- możliwość dodawania nowych domen do śledzenienia za pomocą zatania HTTP
+- możliwość dodawania nowych domen do śledzenia za pomocą zatania HTTP
 - możliwość pobierania statusu domen przez zapytania HTTP
-- możliwość usuwania domen ze zbioru śledzionych za pomocą zapytania HTTP
+- możliwość usuwania domen ze zbioru śledzonych za pomocą zapytania HTTP
 
 ## Architektura programu
 
@@ -60,7 +60,7 @@ Do testów integracyjnch zostanie użyty prosty klient http napisany w Pythonie.
 #### Zapytanie do serwera http
 1. klient wysyła żądanie do serwera http. Umieszcza on zapytanie w kolejce do
    obsłużenia. Któryś z wątków obsługujących odbiera zapytanie i realizuje
-   powierzone przez użytkownia zadania. Dostęp do kolejki zadań jest
+   powierzone przez użytkownika zadania. Dostęp do kolejki zadań jest
    synchronizowany semaforem.
     ```
     Client *****> HttpServer ++> [o O o O o] ++> HttpWorker
@@ -185,7 +185,7 @@ oznaczająca wszystkie interfejsy - INADDR\_ANY)
 - port na którym będzie dostępna usługa http
 - adres interfejsu sieciowego przez który będziemy wysyłać zapytania DNS
 - domyślny interwał pomiędzy cyklicznymi odpytaniami serwerów DNS o domenę
-- domyślny timeout na przysłanie danych od kliena do serwera http po rozpoczęciu
+- domyślny timeout na przysłanie danych od klienta do serwera http po rozpoczęciu
 obsługi (aby nie zabierać zasobów przez "wiszące" połączenia)
 - maksymalna ilość wątków HttpHendler obsługujących klientów serwera http
 - maksymalna długość kolejki użytkowników oczekujących na obsługę przez jeden z
@@ -193,8 +193,8 @@ wątków HttpHendler
 
 Parametry będą konfigurowalne poprzez plik cfg i parametry programu. Parametry
 programu będą miały wyższy priorytet niż plik konfiguracyjny. Parsowanie
-paramerów i pliku konfiguracyjnego zapewni biblioteka  Boost.Program\_options.
-W tym momencie parametry są podane jedynie opisowo, bez podowania ich nazw.
+parametrów i pliku konfiguracyjnego zapewni biblioteka  Boost.Program\_options.
+W tym momencie parametry są podane jedynie opisowo, bez podawania ich nazw.
 Ostateczny zbiór parametrów zostanie ustalonych w trakcie implementacji.
 
 ## Sytuacje wyjątkowe
@@ -202,11 +202,11 @@ Ostateczny zbiór parametrów zostanie ustalonych w trakcie implementacji.
 - próba wykonania operacji bind dla uprzywilejowanego numeru portu bez uprawnień
 użytkownika root, program kończy działanie w wyniku tego błędu
 - brak dostępu do internetu dla interfejsu sieciowego wybranego do odpytywania
-serwerów DNS - następuje dodanie wpisu do logu, program kontynuje swoje
+serwerów DNS - następuje dodanie wpisu do logu, program kontynuuje swoje
 działanie w oczekiwaniu na pojawienie się połączenia
 - nieprawidłowe zapytanie do serwera http (nieprawidłowe nagłówki http lub dane
 w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
-- przepełnienie kolejki podłączonych użytkowniów oczekujących na obsługę -
+- przepełnienie kolejki podłączonych użytkowników oczekujących na obsługę -
 informacja o tym zostaje dodana do logów
 
 ## Format logów
