@@ -3,7 +3,7 @@ header-includes:
     - \usepackage{fancyhdr}
     - \pagestyle{fancy}
     - \fancyhead[CO,CE]{TIN}
-    - \fancyfoot[CO,CE]{Projet}
+    - \fancyfoot[CO,CE]{Projekt}
     - \fancyfoot[LE,RO]{\thepage}
     - \usepackage[labelformat=empty]{caption}
 ---

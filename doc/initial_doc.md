@@ -61,14 +61,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 ![](graph.pdf)
 ![](legend.pdf)
 
-#### Legenda do oznaczeń
-```
-<***** - ruch sieciowy TCP
-<----- - ruch sieciowy UDP
-<+++++ - synchronizowany dostęp do zasobu współdzielonego przez wątki serwera
-[o O o O o] - kolejka synchronizowana
-```
-
+\newpage
 ### Przykłady zapytań JSON
 #### Dodanie nowego serwera/serwerów
 ```js
@@ -154,8 +147,9 @@ obsługi (aby nie zabierać zasobów przez "wiszące" połączenia)
 
 Program będzie konfigurowany poprzez plik cfg w formacie json. Podczas
 uruchamiania plik ten będzie musiał być umieszczony w tym samym katalogu co
-program.
+aplikacja.
 
+\newpage
 ### Przykładowy plik konfiguracyjny
 ```js
 {
@@ -183,8 +177,9 @@ działanie w oczekiwaniu na pojawienie się połączenia
 w json - sytuacja zostaje zalogowana, a nieprawidłowy pakiet odrzucony
 - przepełnienie kolejki podłączonych użytkowników oczekujących na obsługę -
 informacja o tym zostaje dodana do logów
-- nieodnalezienie plik konfiguracyjnego w katalogu w którym jest program -
-aplikacja kończy działanie wypisując komunikat o braku pliku konfiguracyjnego
+- nieodnalezienie plik konfiguracyjnego w katalogu w którym jest program
+- nieprawidłowy format pliku konfiguracyjnego - błąd składniowy lub plik
+niekompletny - program kończy działanie wypisując komunikat o błędzie
 
 ## Format logów
 ```

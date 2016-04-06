@@ -27,7 +27,9 @@ digraph G {
         ]
 
         Client[
-                label = "{Client}"
+                label = "Client"
+                shape = "ellipse"
+                style=filled
         ]
 
         HTTPHandler[
@@ -35,30 +37,35 @@ digraph G {
         ]
 
         Client2[
-                label = "{Client2}"
+                label = "Client2"
                 style="dotted"
+                shape = "ellipse"
+                style=filled
         ]
         HTTPHandler2[
-                label = "{HTTPHandler2}"
-                style="dotted"
+                label = "HTTPHandler2"
         ]
         Client3[
-                label = "{Client3}"
+                label = "Client3"
                 style="dotted"
+                shape = "ellipse"
+                style=filled
         ]
         HTTPHandler3[
-                label = "{HTTPHandler3}"
-                style="dotted"
+                label = "HTTPHandler3"
         ]
         subgraph cluster_1 {
             label = "HTTP"
         graph[style=dotted];
-        Client2 -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
-        Client3 -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
+        Client -> HTTPServer [label="Łączy się z" style = "dotted",
+               color="blue"]
+        Client2 -> HTTPServer [label="Łączy się z" style = "dotted",
+        color="blue"]
+        Client3 -> HTTPServer [label="Łączy się z" style = "dotted",
+        color="blue"]
         HTTPHandler2 -> Client2 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
         HTTPHandler3 -> Client3 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
         HTTPServer -> HTTPHandler2 [label = "tworzy nowy wątek"]
-        Client -> HTTPServer [label="Łączy się z" style = "dotted", color="blue"]
         HTTPHandler -> Client [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
         HTTPServer -> HTTPHandler [label = "tworzy nowy wątek"]
         HTTPServer -> HTTPHandler3 [label = "tworzy nowy wątek"]
@@ -71,7 +78,7 @@ digraph G {
         "solid", color="red"]
 
         DNSPooler[
-                label = "{DNSPooler}"
+                label = "DNSPooler"
                 style="solid"
                 color="#08CD56"
                 style = "bold"
@@ -111,7 +118,7 @@ digraph G {
         ]
         subgraph cluster_0 {
             label = "DNS"
-        graph[style=dotted];
+        graph[style=dotted]
         RootDNSServer -> TopLevelDNSServer [style="dotted"
         color="#A00043"]
         TopLevelDNSServer -> SecondLevelDNSServer [style="dotted"
@@ -129,7 +136,7 @@ digraph G {
         DNSPooler -> NthLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         NthLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
         DNSPooler -> DomainLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
-        DomainLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="#FF1900"]
- }
+        DomainLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed" color="blue"]
+        }
 }
 
