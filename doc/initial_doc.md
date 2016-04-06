@@ -58,7 +58,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 ### Schemat działania
 #### Zapytanie do serwera http
 
-![alt text](graph.pdf "Logo Title Text 1")
+![](graph.pdf)
 
 
 #### Odpytanie serwerów DNS
