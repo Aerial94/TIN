@@ -63,18 +63,18 @@ digraph G {
         color="blue"]
         Client3 -> HTTPServer [label="Łączy się z" style = "dotted",
         color="blue"]
-        HTTPHandler2 -> Client2 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
-        HTTPHandler3 -> Client3 [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
+        HTTPHandler2 -> Client2 [label="odpowiada" style = "dotted", color="blue"]
+        HTTPHandler3 -> Client3 [label="odpowiada" style = "dotted", color="blue"]
         HTTPServer -> HTTPHandler2 [label = "tworzy nowy wątek"]
-        HTTPHandler -> Client [label="odpowiada na rządanie klienta" style = "dotted", color="blue"]
+        HTTPHandler -> Client [label="odpowiada" style = "dotted", color="blue"]
         HTTPServer -> HTTPHandler [label = "tworzy nowy wątek"]
         HTTPServer -> HTTPHandler3 [label = "tworzy nowy wątek"]
         }
-        Database -> HTTPHandler[label="odczytuje z bazy danych" style =
+        Database -> HTTPHandler[label="odczytuje" style =
         "solid", color="red"]
-        Database -> HTTPHandler2 [label="odczytuje z bazy danych" style =
+        Database -> HTTPHandler2 [label="odczytuje" style =
         "solid", color="red"]
-        Database -> HTTPHandler3 [label="odczytuje z bazy danych" style =
+        Database -> HTTPHandler3 [label="odczytuje" style =
         "solid", color="red"]
 
         DNSPooler[
@@ -83,19 +83,20 @@ digraph G {
                 color="#08CD56"
                 style = "bold"
         ]
-        DNSPooler -> Database [label="zapisuje do Bazy Danych" style =
+        DNSPooler -> Database [label="zapisuje" style =
         "solid", color="red"]
 
-        RootDNSServer[
-                label = "RootDNSServer"
-                style="solid"
-                color="#FF8D00"
-                style = "rounded"
-        ]
+
         TopLevelDNSServer[
                 label = "TopLevelDNSServer"
                 style="solid"
                 color="#FF0035"
+                style = "rounded"
+        ]
+        RootDNSServer[
+                label = "RootDNSServer"
+                style="solid"
+                color="#FF8D00"
                 style = "rounded"
         ]
         SecondLevelDNSServer[

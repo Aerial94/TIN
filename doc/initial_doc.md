@@ -48,7 +48,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 - TCPSocket
 - UDPSocket
 - HTTPServer
-- HTTPWorker
+- HTTPHandler
 - HTTPPacket
 - Database
 - DNSPacket
@@ -61,7 +61,17 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 ![](graph.pdf)
 ![](legend.pdf)
 
-\newpage
+Dla każdego nowego połączenia uruchamiany jest wątek HTTPHandler obsługujący to
+połączenie. Liczba wątków działających w danym momencie na rzecz klientów
+serwera HTTP jest konfigurowalna w pliku cfg. Aplikacja reguluje możliwość
+uruchomienia nowego wątku poprzez użycie semafora którego wartość jest ustawiona
+początkowo na ilość wątków podaną w konfiguracji. Stworzenie nowego wątku
+zmniejsza wartość semafora o 1, a zakończenie pracy wątku zwiększa tę wartość.
+
+Synchronizacja poprzez mutex przy dostępie do bazy danych jest zrealizowana na
+poziomie pojedynczej domeny. Gdy DNSPooler chce zapisać dane o domenie, blokuje
+dostęp do odczytu.
+
 ### Przykłady zapytań JSON
 #### Dodanie nowego serwera/serwerów
 ```js
@@ -149,7 +159,6 @@ Program będzie konfigurowany poprzez plik cfg w formacie json. Podczas
 uruchamiania plik ten będzie musiał być umieszczony w tym samym katalogu co
 aplikacja.
 
-\newpage
 ### Przykładowy plik konfiguracyjny
 ```js
 {

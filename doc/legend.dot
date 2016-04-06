@@ -4,7 +4,7 @@ digraph {
   subgraph cluster_01 {
     label = "Legenda do oznaczeń";
     key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
-      <tr><td align="right" port="i1">Dostęp do bazy danych synchronizowany semaforem</td></tr>
+      <tr><td align="right" port="i1">Dostęp do bazy danych synchronizowany przez mutex</td></tr>
       <tr><td align="right" port="i2">Ruch sieciowy TCP</td></tr>
       <tr><td align="right" port="i3">Ruch sieciowy UDP</td></tr>
       <tr><td align="right" port="i4">Powołanie nowego wątku</td></tr>
@@ -35,7 +35,7 @@ digraph {
         shape = "box"
     ]
     client [
-        label = "Aplikacja komunikująca się z serwerem HTTP"
+        label = "Aplikacja komunikująca się z serwerem HTTP"
         shape = "ellipse"
         fontsize = 8
         width=0.2
