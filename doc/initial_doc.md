@@ -44,7 +44,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 
 ## Architektura programu
 
-### Lista podstawowych klas/obiektów
+### Lista podstawowych klas
 - TCPSocket
 - UDPSocket
 - HTTPServer
@@ -83,7 +83,7 @@ dostęp do odczytu.
 "result":
     [
         {"domain":"google.com", "status":"ok"},
-        {"domain":"elka.pw.edu.pl", "staus": "ok"}
+        {"domain":"elka.pw.edu.pl", "status": "ok"}
     ]
 }
 ```
@@ -149,10 +149,9 @@ W programie będzie można skonfigurować następujące parametry:
 - adres interfejsu sieciowego na którym będzie nasłuchiwał serwer http (lub *
 oznaczająca wszystkie interfejsy - INADDR\_ANY)
 - port na którym będzie dostępna usługa http
-- adres interfejsu sieciowego przez który będziemy wysyłać zapytania DNS
-- domyślny interwał pomiędzy cyklicznymi odpytaniami serwerów DNS o domenę
-- domyślny timeout na przysłanie danych od klienta do serwera http po rozpoczęciu
-obsługi (aby nie zabierać zasobów przez "wiszące" połączenia)
+- interwał pomiędzy cyklicznymi odpytaniami serwerów DNS o domenę
+- timeout na przysłanie danych od klienta do serwera http po rozpoczęciu obsługi
+(aby nie zabierać zasobów przez "wiszące" połączenia)
 - maksymalna ilość wątków HttpHandler obsługujących klientów serwera http
 
 Program będzie konfigurowany poprzez plik cfg w formacie json. Podczas
@@ -169,7 +168,6 @@ aplikacja.
         "maxThreads" : "10"
     }
     "dnsPooler" : {
-        "address" : "127.0.0.1",
         "interval" : "600" //odpytanie co 10 minut
     }
 }

@@ -57,11 +57,11 @@ digraph G {
         subgraph cluster_1 {
             label = "HTTP"
         graph[style=dotted];
-        Client -> HTTPServer [label="Łączy się z" style = "dotted",
+        Client -> HTTPServer [label="łączy się z" style = "dotted",
                color="blue"]
-        Client2 -> HTTPServer [label="Łączy się z" style = "dotted",
+        Client2 -> HTTPServer [label="łączy się z" style = "dotted",
         color="blue"]
-        Client3 -> HTTPServer [label="Łączy się z" style = "dotted",
+        Client3 -> HTTPServer [label="łączy się z" style = "dotted",
         color="blue"]
         HTTPHandler2 -> Client2 [label="odpowiada" style = "dotted", color="blue"]
         HTTPHandler3 -> Client3 [label="odpowiada" style = "dotted", color="blue"]
@@ -128,15 +128,15 @@ digraph G {
         color="#A00043"]
         NthLevelDNSServer -> DomainLevelDNSServer [style="dotted"
         color="#A00043"]
-        DNSPooler -> RootDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
+        DNSPooler -> RootDNSServer [label="odpytuje" style = "dashed", color="blue"]
         RootDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> TopLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
+        DNSPooler -> TopLevelDNSServer [label="odpytuje" style = "dashed", color="blue"]
         TopLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> SecondLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
+        DNSPooler -> SecondLevelDNSServer [label="odpytuje" style = "dashed", color="blue"]
         SecondLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> NthLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
+        DNSPooler -> NthLevelDNSServer [label="odpytuje" style = "dashed", color="blue"]
         NthLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> DomainLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
+        DNSPooler -> DomainLevelDNSServer [label="odpytuje" style = "dashed", color="blue"]
         DomainLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed" color="blue"]
         }
 }
