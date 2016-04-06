@@ -55,36 +55,11 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 - DNSPooler
 - Logger
 
+\newpage
 ### Schemat działania
-#### Zapytanie do serwera http
 
 ![](graph.pdf)
-
-
-#### Odpytanie serwerów DNS
-1. DnsPooler odczytuje z bazy danych domen informacje o domenie którą ma w danej
-   chwili zbadać
-    ```
-    DnsPooler <++ Database
-    ```
-2. DnsPooler zaczyna odpytywanie od jednego z root serwerów i przechodzi przez
-   wszystkie poziomy hierarchi DNS
-    ```
-    RootDnsServer <---- DnsPooler
-    RootDnsServer ----> DnsPooler
-    TopLevelDnsServer <---- DnsPooler
-    TopLevelDnsServer ----> DnsPooler
-    SecondLevelDnsServer <---- DnsPooler
-    SecondLevelDnsServer ----> DnsPooler
-    ...
-    DomainLevelDnsServer <---- DnsPooler
-    DomainLevelDnsServer ----> DnsPooler
-    ```
-
-3. DnsPooler zapisuje wynik odpytania do bazy danych
-    ```
-    DnsPooler ++> Database
-    ```
+![](legend.pdf)
 
 #### Legenda do oznaczeń
 ```
@@ -183,19 +158,16 @@ program.
 
 ### Przykładowy plik konfiguracyjny
 ```js
-{ "http": {
-    "server" : {
+{
+    "httpServer": {
         "address" : "127.0.0.1",
         "port" : "8080"
-    },
-    "readTimeout" : "60", //timeout 1 minuta
-    "maxThreads" : "10"
+        "readTimeout" : "60", //timeout 1 minuta
+        "maxThreads" : "10"
     }
-    "dns" : {
-        "pooler" : {
-            "address" : "127.0.0.1",
-            "interval" : "600" //odpytanie co 10 minut
-        }
+    "dnsPooler" : {
+        "address" : "127.0.0.1",
+        "interval" : "600" //odpytanie co 10 minut
     }
 }
 ```

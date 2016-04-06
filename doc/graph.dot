@@ -113,22 +113,22 @@ digraph G {
             label = "DNS"
         graph[style=dotted];
         RootDNSServer -> TopLevelDNSServer [style="dotted"
-        color="#00FFE8"]
+        color="#A00043"]
         TopLevelDNSServer -> SecondLevelDNSServer [style="dotted"
-        color="#00FFE8"]
+        color="#A00043"]
         SecondLevelDNSServer -> NthLevelDNSServer [style="dotted"
-        color="#00FFE8"]
+        color="#A00043"]
         NthLevelDNSServer -> DomainLevelDNSServer [style="dotted"
-        color="#00FFE8"]
-        DNSPooler -> RootDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        color="#A00043"]
+        DNSPooler -> RootDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         RootDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> TopLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        DNSPooler -> TopLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         TopLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> SecondLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        DNSPooler -> SecondLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         SecondLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> NthLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        DNSPooler -> NthLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         NthLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="blue"]
-        DNSPooler -> DomainLevelDNSServer [label="rozpoczyna odpytywanie od" style = "dashed", color="blue"]
+        DNSPooler -> DomainLevelDNSServer [label="rozpoczyna odpytywanie" style = "dashed", color="blue"]
         DomainLevelDNSServer -> DNSPooler [label="odpowiada" style = "dashed", color="#FF1900"]
  }
 }
