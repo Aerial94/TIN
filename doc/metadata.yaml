@@ -1,9 +1,10 @@
 ---
 header-includes:
     - \usepackage{fancyhdr}
+    - \usepackage[labelformat=empty]{caption}
     - \pagestyle{fancy}
     - \fancyhead[CO,CE]{TIN}
     - \fancyfoot[CO,CE]{Projekt}
     - \fancyfoot[LE,RO]{\thepage}
-    - \usepackage[labelformat=empty]{caption}
+    - \DeclareUnicodeCharacter{00A0}{ }
 ---

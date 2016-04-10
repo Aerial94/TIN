@@ -54,6 +54,7 @@ Do testów integracyjnych zostanie użyty prosty klient http napisany w Pythonie
 - DNSPacket
 - DNSPooler
 - Logger
+- Configuration
 
 \newpage
 ### Schemat działania
@@ -68,9 +69,131 @@ uruchomienia nowego wątku poprzez użycie semafora którego wartość jest usta
 początkowo na ilość wątków podaną w konfiguracji. Stworzenie nowego wątku
 zmniejsza wartość semafora o 1, a zakończenie pracy wątku zwiększa tę wartość.
 
-Synchronizacja poprzez mutex przy dostępie do bazy danych jest zrealizowana na
-poziomie pojedynczej domeny. Gdy DNSPooler chce zapisać dane o domenie, blokuje
-dostęp do odczytu.
+#### Start aplikacji
+1. przełączenie programu w tryb deamona i wpisanie pidu do pliku
+dns-checker.pid
+2. podłącznie signal handlera dla SIGUSR1
+1. sprawdzenie czy plik kofiguracji istnieje, jeśli nie to program kończy
+   dzałanie i wypisuje komunikat do logu
+2. odczytanie konfiguracji i umieszczenie jej w instalacji klasy Configuration
+3. utworzenie obiektu Database w którym na początku nie ma domen do śledzienia
+4. uruchomienie wątku HTTPServer
+    - bind adresu i portu wskazanego w konfiguracji
+    - rozpoczęcie nasłuchiwania
+5. uruchomienie wątku DNSPooler
+    - wejście do pętli cyklicznego odpytywana
+    - uśpienie na czas określony w kofiguracji jako interval
+
+#### Jeden cykl pracy DNSPoolera
+Co określony czas podany w kofiguracji DNSPooler odświeża status wszystkich
+domen śledzonych przez aplikację.
+```
+Dla każdej domeny (D):
+    a:
+    pula\_serwerów <= [Root serwery DNS]
+    Dla każdego serwera (S) z puli:
+        b:
+        Zapytaj serwer o domenę D
+
+        Jeśli serwer jest autorytatywny dla domeny to zaznaczmy w bazie
+        danych że domena istnieje
+
+        Jeśli serwer nie zna domeny ale zna serwery które są autorytatywne dla
+        kolejnej strefy do której należy domena (np dla domeny elka.pw.edu.pl
+        serwery Root wskażą że znają serwery odpowiadające za strefę .pl
+        a w następnym obrocie pętli serwery odpowiadające za .edu.pl) to:
+                pula\_serwerów = [serwery znające następną część domeny]
+                goto b.
+
+        Jeśli domena jest nieznana to zapisujemy to w bazie danych i
+           przechodzimy do odświerzenia następnej domeny (goto a)
+```
+
+#### Dodanie domeny do śledzienia przez użytkownika
+1. użytkownik łączy się do HTTPServera
+2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
+3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
+   application/json, url nie ma znaczenia i jest ignorowany, w ciele zapytania
+   powinien być JSON postaci
+    ```js
+    {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]}
+    ```
+4. HTTPHandler odbiera rządanie i jeśli jest poprawna to dodaje zadane domeny do
+   bazy danych
+5. HTTPHandler buduje odpowiedź postaci
+    ```js
+    {"task": {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]},
+    "result":
+    [
+    {"domain":"google.com", "status":"ok"},
+    {"domain":"elka.pw.edu.pl", "status": "alreadyInDatabase"}
+    ]
+    }
+    ```
+    i odsyła pakiet HTTP do użytkownia
+6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
+7. wątek obsługujący użytkownika kończy działanie opuszczjąc funkcję obsługi
+
+#### Usuwanie domen przez użytkownika
+1. użytkownik łączy się do HTTPServera
+2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
+3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
+   application/json, url nie ma znaczenia i jest ignorowany, w ciele zapytania
+   powinien być JSON postaci
+    ```js
+    {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]}
+    ```
+4. HTTPHandler odbiera rządanie i jeśli jest poprawna to usuwa zadane domeny z bazy danych
+5. HTTPHandler buduje odpowiedź postaci
+    ```js
+    {"task": {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]},
+    "result":
+    [
+    {"domain":"google.com", "status":"ok"},
+    {"domain":"elka.pw.edu.pl", "staus": "not_in_database"}
+    ]
+    }
+    ```
+    i odsyła pakiet HTTP do użytkownia
+6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
+7. wątek obsługujący użytkownika kończy działanie opuszczjąc funkcję obsługi
+
+#### Odpytanie o status domen przez użytkownika
+1. użytkownik łączy się do HTTPServera
+2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
+3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
+   application/json, url nie ma znaczenia i jest ignorowany, w ciele zapytania
+   powinien być JSON postaci
+    ```js
+    {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl", "github.com"]}
+    ```
+4. HTTPHandler odbiera rządanie i wyszukuje zadane domeny w bazie danych oraz
+   gdy je znajdzie pobiera ich status
+5. HTTPHandler buduje odpowiedź postaci
+    ```js
+    {"task": {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl"]},
+    "result":
+    [
+    {"domain":"google.com", "status":"ok"},
+    {"domain":"elka.pw.edu.pl", "staus": "no_in_database"},
+    {"domain":"wp.pl", "staus": "unreachable"},
+    {"domain":"github.com", "staus": "unknown"},
+    ```
+    i odsyła pakiet HTTP do użytkownia
+6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
+7. wątek obsługujący użytkownika kończy działanie opuszczjąc funkcję obsługi
+
+#### Dostęp do bazy danych domen
+Wszystkie dostępy do zapisu, odczytu i usuwania są chronione mutexem.
+
+#### Zakończenie działania aplikacja
+Aby zakończyć działanie aplikacja należy wydać w terminalu polecenie
+```bash
+cd TIN
+kill -SIGUSR1 $(cat dns-checker.pid)
+```
+Program po otrzymaniu sygnału zakończy wszystkie wątki i wpisze do logu
+informację o wyłączaniu.
 
 ### Przykłady zapytań JSON
 #### Dodanie nowego serwera/serwerów
@@ -79,7 +202,7 @@ dostęp do odczytu.
 ```
 ##### Odpowiedź
 ```js
-{"task": {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]},
+
 "result":
     [
         {"domain":"google.com", "status":"ok"},
@@ -87,7 +210,7 @@ dostęp do odczytu.
     ]
 }
 ```
-#### Dodanie usunięcie serwera/serwerów
+#### Usunięcie serwera/serwerów
 ```js
 {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]}
 ```
@@ -140,7 +263,7 @@ make
 ```bash
 cd TIN
 cd build
-./domain-checker [parametry]
+./domain-checker
 ```
 
 ## Zmiana parametrów programu
@@ -154,11 +277,13 @@ oznaczająca wszystkie interfejsy - INADDR\_ANY)
 (aby nie zabierać zasobów przez "wiszące" połączenia)
 - maksymalna ilość wątków HttpHandler obsługujących klientów serwera http
 
-Program będzie konfigurowany poprzez plik cfg w formacie json. Podczas
-uruchamiania plik ten będzie musiał być umieszczony w tym samym katalogu co
-aplikacja.
+Program będzie konfigurowany poprzez plik cfg w formacie json o nazwie
+config.json. Podczas uruchamiania plik ten będzie musiał być umieszczony w tym
+samym katalogu co aplikacja.
 
+\newpage
 ### Przykładowy plik konfiguracyjny
+config.json
 ```js
 {
     "httpServer": {
@@ -170,7 +295,27 @@ aplikacja.
     "dnsPooler" : {
         "interval" : "600" //odpytanie co 10 minut
     }
+    "logLevel": "DEBUG"
 }
+```
+#### Opis konfiguracji
+```js
+httpServer.address // adres ip interfejsu na którym ma być dostępna usługa serwera HTTP
+httpServer.port // port TCP na którym ma być dostępna usługa serwera HTTP
+httpServer.readTimeout // czas oczekiwania na komunikat od klienta po połączeniu
+                       // po którego przekroczeniu serwer się odłącza
+                       // (w sekundach)
+httpServer.maxThreads // maksymalna ilość wątków HTTPHandler mogących działać w
+                      // jednym momencie
+dnsPooler.interval // definiuje co jaki czas ma odbyć sie sprawdzenie statusu
+                   // domen
+logLevel // poziomy logowania
+logLevel = INFO // Podstawowe informacje o pracy programu
+logLevel = WARNING // To samo co INFO a dodatkowo logowanie sytuacji nietypowych
+                   // (błędne pakiety itp)
+logLevel = DEBUG // to samo co WARNING a dodatowo dokładne informacje na
+                 // temat pracy programu przydatne do debugowania (zawartość
+                 // pakietów itp)
 ```
 
 ## Sytuacje wyjątkowe
@@ -189,7 +334,15 @@ informacja o tym zostaje dodana do logów
 niekompletny - program kończy działanie wypisując komunikat o błędzie
 
 ## Format logów
+Wszystkie logi są zapisywane do pliku log.txt w katalogu programu
 ```
-DATA CZAS WAŻNOŚĆ_LOGU NAZWA_MODUŁU NAZWA_BŁĘDU OPIS
+DATA CZAS [WAŻNOŚĆ_LOGU] (NAZWA_MODUŁU) NAZWA_BŁĘDU OPIS
 WAŻNOŚĆ_LOGU => INFO | DEBUG | WARNING
+```
+
+### Przykładowe logi
+```
+2016.04.09 11:20:17 [INFO] (Main) Application started
+2016.04.09 14:32:49 [WARNING] (HTTPHandler) Bogus packet from 127.0.0.1:8764 dropped
+2016.04.09 18:14:58 [DEBUG] (Main) Main pid is 1432, saving to file dns-checker.pid
 ```
