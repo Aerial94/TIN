@@ -84,7 +84,10 @@ dns-checker.pid
     - wejście do pętli cyklicznego odpytywana
     - uśpienie na czas określony w kofiguracji jako interval
 
+\newpage
 #### Jeden cykl pracy DNSPoolera
+![](dnsPool.png)
+
 Co określony czas podany w kofiguracji DNSPooler odświeża status wszystkich
 domen śledzonych przez aplikację.
 ```
@@ -94,22 +97,23 @@ Dla każdej domeny (D):
     Dla każdego serwera (S) z puli:
         b:
         Zapytaj serwer o domenę D
-
-        Jeśli serwer jest autorytatywny dla domeny to zaznaczmy w bazie
-        danych że domena istnieje
-
-        Jeśli serwer nie zna domeny ale zna serwery które są autorytatywne dla
+        a) Jeśli serwer jest autorytatywny dla domeny to zaznaczmy w bazie
+        danych że domena istnieje i przechodzimy do następnej domeny
+        b) Jeśli serwer nie zna domeny ale zna serwery które są autorytatywne dla
         kolejnej strefy do której należy domena (np dla domeny elka.pw.edu.pl
         serwery Root wskażą że znają serwery odpowiadające za strefę .pl
         a w następnym obrocie pętli serwery odpowiadające za .edu.pl) to:
                 pula\_serwerów = [serwery znające następną część domeny]
                 goto b.
 
-        Jeśli domena jest nieznana to zapisujemy to w bazie danych i
+        c) Jeśli domena jest nieznana to zapisujemy to w bazie danych i
            przechodzimy do odświerzenia następnej domeny (goto a)
 ```
 
+\newpage
 #### Dodanie domeny do śledzienia przez użytkownika
+![](addDomain.png)
+
 1. użytkownik łączy się do HTTPServera
 2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
 3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
@@ -123,18 +127,18 @@ Dla każdej domeny (D):
 5. HTTPHandler buduje odpowiedź postaci
     ```js
     {"task": {"command":"add", "domains": ["google.com", "elka.pw.edu.pl"]},
-    "result":
-    [
+    "result": [
     {"domain":"google.com", "status":"ok"},
-    {"domain":"elka.pw.edu.pl", "status": "alreadyInDatabase"}
-    ]
-    }
+    {"domain":"elka.pw.edu.pl", "status": "alreadyInDatabase"}]}
     ```
     i odsyła pakiet HTTP do użytkownia
 6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
 7. wątek obsługujący użytkownika kończy działanie opuszczjąc funkcję obsługi
 
+\newpage
 #### Usuwanie domen przez użytkownika
+![](removeDomain.png)
+
 1. użytkownik łączy się do HTTPServera
 2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
 3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
@@ -147,18 +151,18 @@ Dla każdej domeny (D):
 5. HTTPHandler buduje odpowiedź postaci
     ```js
     {"task": {"command":"remove", "domains": ["google.com", "elka.pw.edu.pl"]},
-    "result":
-    [
+    "result": [
     {"domain":"google.com", "status":"ok"},
-    {"domain":"elka.pw.edu.pl", "staus": "not_in_database"}
-    ]
-    }
+    {"domain":"elka.pw.edu.pl", "staus": "not_in_database"}]}
     ```
     i odsyła pakiet HTTP do użytkownia
 6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
 7. wątek obsługujący użytkownika kończy działanie opuszczjąc funkcję obsługi
 
+\newpage
 #### Odpytanie o status domen przez użytkownika
+![](readDomain.png)
+
 1. użytkownik łączy się do HTTPServera
 2. serwer tworzy nowy wątek dla użytkownika (HTTPHandler)
 3. użytkownik wysyła zapytanie HTTP POST z nagłówkiem HTTP Content-Type:
@@ -177,7 +181,7 @@ Dla każdej domeny (D):
     {"domain":"google.com", "status":"ok"},
     {"domain":"elka.pw.edu.pl", "staus": "no_in_database"},
     {"domain":"wp.pl", "staus": "unreachable"},
-    {"domain":"github.com", "staus": "unknown"},
+    {"domain":"github.com", "staus": "unknown"}]}
     ```
     i odsyła pakiet HTTP do użytkownia
 6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
@@ -281,7 +285,6 @@ Program będzie konfigurowany poprzez plik cfg w formacie json o nazwie
 config.json. Podczas uruchamiania plik ten będzie musiał być umieszczony w tym
 samym katalogu co aplikacja.
 
-\newpage
 ### Przykładowy plik konfiguracyjny
 config.json
 ```js
@@ -308,8 +311,8 @@ httpServer.readTimeout // czas oczekiwania na komunikat od klienta po połączen
 httpServer.maxThreads // maksymalna ilość wątków HTTPHandler mogących działać w
                       // jednym momencie
 dnsPooler.interval // definiuje co jaki czas ma odbyć sie sprawdzenie statusu
-                   // domen
-logLevel // poziomy logowania
+                   // domen (w sekundach)
+logLevel // poziom logowania
 logLevel = INFO // Podstawowe informacje o pracy programu
 logLevel = WARNING // To samo co INFO a dodatkowo logowanie sytuacji nietypowych
                    // (błędne pakiety itp)
