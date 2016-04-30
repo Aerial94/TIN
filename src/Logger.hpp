@@ -7,9 +7,11 @@
 
 class Logger {
 public:
+    Logger();
     enum LogLevel {NONE, INFO, WARNING, DEBUG};
     Logger(LogLevel logLevel);
     ~Logger();
+    static Logger& getInstance();
     void logInfo(std::string moduleName, std::string message);
     void logWarning(std::string moduleName, std::string message);
     void logDebug(std::string moduleName, std::string message);

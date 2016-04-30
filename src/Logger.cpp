@@ -60,6 +60,12 @@ void Logger::close() {
     this->logFile.close();
 }
 
+Logger &Logger::getInstance() {
+    static Logger logger;
+    return  logger;
+}
 
 
-
+Logger::Logger() {
+    this->logLevel = LogLevel::NONE;
+}
