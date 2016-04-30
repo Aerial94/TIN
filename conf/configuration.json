@@ -1,0 +1,12 @@
+{
+    "httpServer": {
+        "address" : "127.0.0.1",
+        "port" : 8080,
+        "readTimeout" : 60,
+        "maxThreads" : 10
+    },
+    "dnsPooler" : {
+        "interval" : 600
+    },
+    "logLevel": "DEBUG"
+}
