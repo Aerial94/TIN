@@ -7,8 +7,8 @@
 
 class Logger {
 public:
-    enum LogLever {NONE, INFO, WARNING, DEBUG};
-    Logger(LogLever logLever);
+    enum LogLevel {NONE, INFO, WARNING, DEBUG};
+    Logger(LogLevel logLevel);
     ~Logger();
     void logInfo(std::string moduleName, std::string message);
     void logWarning(std::string moduleName, std::string message);
@@ -16,10 +16,10 @@ public:
     void flush();
     void close();
 private:
-    LogLever logLever;
+    LogLevel logLevel;
     std::ofstream logFile;
-private:
     std::string getCurrentTimeDate();
+
     void appendToLogFile(std::string level, std::string moduleName,
                          std::string message);
 };

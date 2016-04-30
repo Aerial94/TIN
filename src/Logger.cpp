@@ -1,23 +1,23 @@
 #include "Logger.hpp"
 
-Logger::Logger(LogLever logLever) : logLever(logLever) {
+Logger::Logger(LogLevel logLevel) : logLevel(logLevel) {
     this->logFile.open("log.txt", std::ios_base::app);
 }
 
 void Logger::logInfo(std::string moduleName, std::string message) {
-    if (this->logLever < LogLever::INFO)
+    if (this->logLevel < LogLevel::INFO)
         return;
     this->appendToLogFile("[INFO]", moduleName, message);
 }
 
 void Logger::logWarning(std::string moduleName, std::string message) {
-    if (this->logLever < LogLever::WARNING)
+    if (this->logLevel < LogLevel::WARNING)
         return;
     this->appendToLogFile("[WARNING]", moduleName, message);
 }
 
 void Logger::logDebug(std::string moduleName, std::string message) {
-    if (this->logLever < LogLever::DEBUG)
+    if (this->logLevel < LogLevel::DEBUG)
         return;
     this->appendToLogFile("[DEBUG]", moduleName, message);
 

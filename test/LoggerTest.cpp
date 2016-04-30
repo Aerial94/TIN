@@ -7,7 +7,7 @@
 SCENARIO("DEBUG Logger adds lines to file") {
     GIVEN("No log file and new Logger DEBUG instance") {
         std::remove("log.txt");
-        Logger logger(Logger::LogLever::DEBUG);
+        Logger logger(Logger::LogLevel::DEBUG);
         WHEN("We ask for log Info") {
             logger.logInfo("testModuleName", "TestMessage");
             logger.close();
