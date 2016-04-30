@@ -1,5 +1,6 @@
 #include "Configuration.hpp"
 #include <json/json.h>
+#include "Logger.hpp"
 
 void Configuration::parse(std::string fileName) {
     std::ifstream infile(fileName);
@@ -59,7 +60,7 @@ void Configuration::parse(std::string fileName) {
         throw exception;
     }
     parseLogLevel(root);
-
+    this->readyToUse = true;
 }
 
 void Configuration::parseLogLevel(const Json::Value &root) {
@@ -86,3 +87,8 @@ void Configuration::parseLogLevel(const Json::Value &root) {
 Configuration::Configuration() {
     this->parse("configuration.json");
 }
+
+Configuration &Configuration::getInstance() {
+    return this->instance;
+}
+

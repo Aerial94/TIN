@@ -37,8 +37,36 @@ public:
     Configuration();
     virtual ~Configuration() { }
     Configuration& getInstance();
+
+    short getHttpServerPort() const {
+        return httpServerPort;
+    }
+
+    std::string getHttpServerAddress() const {
+        return httpServerAddress;
+    }
+
+    int getHttpServerReadTimeout() const {
+        return httpServerReadTimeout;
+    }
+
+    int getHttpServerMaxThreads() const {
+        return httpServerMaxThreads;
+    }
+
+    int getDnsPoolerInterval() const {
+        return dnsPoolerInterval;
+    }
+
+    Logger::LogLevel getLogLevel() const {
+        return logLevel;
+    }
+    bool isReadyToUse() const {
+        return readyToUse;
+    }
+
 private:
-    void parse(std::string fileName);
+    bool readyToUse;
     std::string httpServerAddress;
     /*Port is in little endian, must be converted to use in socket*/
     short httpServerPort;
@@ -48,6 +76,7 @@ private:
     int dnsPoolerInterval;
     Logger::LogLevel logLevel;
 
+    void parse(std::string fileName);
     void parseLogLevel(const Json::Value &root);
 };
 
