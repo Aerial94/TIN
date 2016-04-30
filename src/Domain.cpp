@@ -7,7 +7,7 @@ Domain::Domain(std::string dName)
 }
 
 
-DOMAIN_STATUS Domain::getStatus()
+Domain::DOMAIN_STATUS Domain::getStatus()
 {
     return this->status;
 }
