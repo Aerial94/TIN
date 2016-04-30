@@ -13,6 +13,8 @@ public:
     void logInfo(std::string moduleName, std::string message);
     void logWarning(std::string moduleName, std::string message);
     void logDebug(std::string moduleName, std::string message);
+    void flush();
+    void close();
 private:
     LogLever logLever;
     std::ofstream logFile;

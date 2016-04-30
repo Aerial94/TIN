@@ -24,7 +24,7 @@ void Logger::logDebug(std::string moduleName, std::string message) {
 }
 
 Logger::~Logger() {
-    this->logFile.close();
+    this->close();
 }
 
 void Logger::appendToLogFile(std::string level, std::string moduleName,
@@ -51,3 +51,15 @@ std::string Logger::getCurrentTimeDate() {
     std::string str(buffer);
     return str;
 }
+
+void Logger::flush() {
+    this->logFile.flags();
+}
+
+void Logger::close() {
+    this->logFile.close();
+}
+
+
+
+
