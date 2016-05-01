@@ -89,6 +89,5 @@ Configuration::Configuration() {
 }
 
 Configuration &Configuration::getInstance() {
-    return this->instance;
 }
 
