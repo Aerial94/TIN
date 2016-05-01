@@ -3,9 +3,18 @@
 
 #include <cstdlib>
 #include <ctime>
-class DNSQuestion {
+#include <string>
 
+class DNSQuestion {
+    std::string qname;
+    short qtype;
+    short qclass;
+    char * convertDomainNameToPacket(std::string domainName);
+    std::string convertDomainNameFromPacket(char * data);
 };
+
+class DNSAnswer {};
+
 class DNSPacket {
 private:
 public:
