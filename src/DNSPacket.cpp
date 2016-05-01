@@ -26,6 +26,12 @@ bool DNSPacket::isResponse() {
 }
 
 
+char *DNSQuestion::getRawName() {
+
+}
+
+char *DNSQuestion::toPacketFormat(std::string domainName) {
+}
 
 
 
