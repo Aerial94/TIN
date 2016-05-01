@@ -1,9 +1,5 @@
 #include "Database.hpp"
 
-std::vector<Domain> Database::domains;
-std::mutex Database::mutex;
-
-
 std::vector<Domain>::iterator Database::findDomain(std::string dName)
 {
     std::lock_guard<std::mutex> guard(mutex);

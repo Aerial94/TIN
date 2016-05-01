@@ -12,11 +12,13 @@ class Database
 {
 private:
     Database() {};
-    //~Database() {};
-    static std::vector<Domain>::iterator findDomain(std::string dName);
+    Database(const Database &);
+    ~Database() {};
+    Database & operator=(const Database &);
+    std::vector<Domain>::iterator findDomain(std::string dName);
 
-    static std::vector<Domain> domains;
-    static std::mutex mutex;
+    std::vector<Domain> domains;
+    std::mutex mutex;
 
 public:
     static Database & getInstance()
@@ -26,10 +28,10 @@ public:
     }
 
 
-    static HTTPHandler::MessageStatus getDomainStatus(std::string dName);
-    static HTTPHandler::MessageStatus addDomain(std::string dName);
-    static HTTPHandler::MessageStatus removeDomain(std::string dName);
-    static HTTPHandler::MessageStatus updateDomain(std::string dName, Domain::DomainStatus status);
+    HTTPHandler::MessageStatus getDomainStatus(std::string dName);
+    HTTPHandler::MessageStatus addDomain(std::string dName);
+    HTTPHandler::MessageStatus removeDomain(std::string dName);
+    HTTPHandler::MessageStatus updateDomain(std::string dName, Domain::DomainStatus status);
 };
 
 
