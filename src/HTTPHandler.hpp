@@ -1,0 +1,13 @@
+#ifndef DNS_CHECKER_HTTPHANDLER_H
+#define DNS_CHECKER_HTTPHANDLER_H
+
+
+class HTTPHandler
+{
+public:
+    enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
+
+};
+
+
+#endif //DNS_CHECKER_HTTPHANDLER_H

@@ -5,15 +5,15 @@
 class Domain
 {
 public:
-    enum DOMAIN_STATUS {FOLLOWED, FOLLOWED_BUT_NOT_CHECKED, NONEXISTENT};
+    enum DomainStatus {FOLLOWED, FOLLOWED_BUT_UNCHECKED, NONEXISTENT};
 private:
     std::string domainName;
-    DOMAIN_STATUS status;
+    DomainStatus status;
 
 public:
     Domain(std::string dName);
-    DOMAIN_STATUS getStatus();
-    void setStatus(DOMAIN_STATUS status);
+    DomainStatus getStatus();
+    void setStatus(DomainStatus status);
     std::string getDomainName();
 };
 

@@ -1,19 +1,19 @@
-#include "Domain.h"
+#include "Domain.hpp"
 
 Domain::Domain(std::string dName)
 {
     this->domainName = dName;
-    this->status = DOMAIN_STATUS::FOLLOWED_BUT_NOT_CHECKED;
+    this->status = DomainStatus::FOLLOWED_BUT_UNCHECKED;
 }
 
 
-Domain::DOMAIN_STATUS Domain::getStatus()
+Domain::DomainStatus Domain::getStatus()
 {
     return this->status;
 }
 
 
-void Domain::setStatus(DOMAIN_STATUS status)
+void Domain::setStatus(DomainStatus status)
 {
     this->status = status;
 }
