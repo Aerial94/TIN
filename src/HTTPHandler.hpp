@@ -5,7 +5,6 @@
 #include <string>
 #include <json/json.h>
 #include <json/writer.h>
-#include "Database.hpp"
 
 class HTTPHandler;
 
@@ -17,7 +16,6 @@ public:
         REQUEST_SYNTAX_ERROR,
         REQUEST_NO_COMMAND,
         REQUEST_NO_DOMAINS
-
     };
     const std::string getDescription() const {
         return this->description;

@@ -1,5 +1,5 @@
 #include "HTTPHandler.hpp"
-
+#include "Database.hpp"
 
 void HTTPHandler::parse(std::string json)
 {

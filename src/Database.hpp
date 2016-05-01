@@ -1,12 +1,12 @@
 #ifndef DNS_CHECKER_DATABASE_H
 #define DNS_CHECKER_DATABASE_H
 
-#include "Domain.hpp"
-#include "HTTPHandler.hpp"
 #include <vector>
 #include <string>
 #include <iterator>
 #include <mutex>
+#include "Domain.hpp"
+#include "HTTPHandler.hpp"
 
 class Database
 {
@@ -26,7 +26,6 @@ public:
         static Database instance;
         return instance;
     }
-
 
     HTTPHandler::MessageStatus getDomainStatus(std::string dName);
     HTTPHandler::MessageStatus addDomain(std::string dName);
