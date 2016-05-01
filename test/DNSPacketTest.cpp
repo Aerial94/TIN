@@ -49,3 +49,21 @@ SCENARIO("DNS Packet should create header fields by parsing raw data buffer") {
         }
     }
 }
+
+SCENARIO("DNSQuestion conversion") {
+    GIVEN("www.google.com domain name") {
+        std::string domain = "www.google.com";
+        WHEN("DNSQuestion converts it to packet format")
+        {
+            DNSQuestion question;
+            question.toPacketFormat(domain);
+            THEN("name is correctly converted") {
+                char * name = question.getRawName();
+                REQUIRE(name[0] == 3);
+                REQUIRE(name[1] == 'w');
+                REQUIRE(name[2] == 'w');
+                REQUIRE(name[3] == 'w');
+            }
+        }
+    }
+}
