@@ -11,9 +11,9 @@
 class Database
 {
 private:
-    Database() {};
+    Database() {}
     Database(const Database &);
-    ~Database() {};
+    ~Database() {}
     Database & operator=(const Database &);
     std::vector<Domain>::iterator findDomain(std::string dName);
 

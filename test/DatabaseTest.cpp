@@ -97,6 +97,7 @@ SCENARIO("We want to update status of domain")
                 {
                     status = Database::getInstance().getDomainStatus(domainName);
                     REQUIRE(status == HTTPHandler::MessageStatus::UNKNOWN);
+                    Database::getInstance().removeDomain(domainName);
                 }
             }
         }

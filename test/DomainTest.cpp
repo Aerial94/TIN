@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "../src/Domain.hpp"
 #include <string>
+#include <iostream>
 
 SCENARIO("We want to create new domain with a given name")
 {
