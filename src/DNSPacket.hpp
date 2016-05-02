@@ -11,13 +11,14 @@ private:
     short qtype;
     short qclass;
 public:
+    DNSQuestion(const std::string &qname);
     char * toPacketFormat(std::string domainName);
     std::string fromPacketFormat(char *data, char* end);
     const std::string &getQname() const {
         return qname;
     }
 
-    char *getRawName();
+    char *getRaw();
 };
 
 class DNSAnswer {};

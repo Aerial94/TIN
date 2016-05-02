@@ -55,14 +55,29 @@ SCENARIO("DNSQuestion conversion") {
         std::string domain = "www.google.com";
         WHEN("DNSQuestion converts it to packet format")
         {
-            DNSQuestion question;
-            question.toPacketFormat(domain);
+            DNSQuestion question(domain);
             THEN("name is correctly converted") {
-                char * name = question.getRawName();
+                char * name = question.getRaw();
                 REQUIRE(name[0] == 3);
                 REQUIRE(name[1] == 'w');
                 REQUIRE(name[2] == 'w');
                 REQUIRE(name[3] == 'w');
+                REQUIRE(name[4] == 6 );
+                REQUIRE(name[5] == 'g');
+                REQUIRE(name[6] == 'o');
+                REQUIRE(name[7] == 'o');
+                REQUIRE(name[8] == 'g');
+                REQUIRE(name[9] == 'l');
+                REQUIRE(name[10] == 'e');
+                REQUIRE(name[11] == 3);
+                REQUIRE(name[12] == 'c');
+                REQUIRE(name[13] == 'o');
+                REQUIRE(name[14] == 'm');
+                REQUIRE(name[15] == '\0');
+                REQUIRE(name[16] == 0);
+                REQUIRE(name[17] == 1);
+                REQUIRE(name[18] == 0);
+                REQUIRE(name[19] == 1);
             }
         }
     }

@@ -1,5 +1,7 @@
 #include "DNSPacket.hpp"
 #include <arpa/inet.h>
+#include <cstdlib>
+#include <cstring>
 
 short DNSPacket::generateIdentifier() {
     std::srand(std::time(0));
@@ -26,12 +28,34 @@ bool DNSPacket::isResponse() {
 }
 
 
-char *DNSQuestion::getRawName() {
-
+char *DNSQuestion::getRaw() {
+    char *rawData = (char *) std::malloc(1 + this->qname.length() + 1 + 4);
+    int i = 0;
+    std::string domain = this->qname;
+    size_t  pos;
+    size_t len;
+    do {
+        pos = domain.find_first_of(".");
+        std::string substr = domain.substr(0, pos);
+        len = substr.length();
+        rawData[i] = (char)len;
+        std::memcpy(&rawData[i+1], substr.c_str(), len);
+        domain.erase(0, len + 1);
+        i += len+1;
+    } while (pos != std::string::npos);
+    rawData[i] = '\0';
+    rawData[i+1] = '\0';
+    rawData[i+2] = 1;
+    rawData[i+3] = '\0';
+    rawData[i+4] = 1;
+    return rawData;
 }
 
 char *DNSQuestion::toPacketFormat(std::string domainName) {
+    this->qname = domainName;
 }
 
 
-
+DNSQuestion::DNSQuestion(const std::string &qname) {
+    this->qname = qname;
+}
