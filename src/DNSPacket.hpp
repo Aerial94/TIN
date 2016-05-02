@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <vector>
 
 class DNSQuestion {
 private:
@@ -11,14 +12,16 @@ private:
     short qtype;
     short qclass;
 public:
+    DNSQuestion() {}
     DNSQuestion(const std::string &qname);
     char * toPacketFormat(std::string domainName);
     std::string fromPacketFormat(char *data, char* end);
-    const std::string &getQname() const {
+    const std::string &getDomainName() const {
         return qname;
     }
 
     char *getRaw();
+    int setRaw(char *raw);
 };
 
 class DNSAnswer {};
@@ -77,6 +80,7 @@ public:
 
     short generateIdentifier();
     int parsePointer;
+    std::vector<DNSQuestion> questions;
 };
 
 

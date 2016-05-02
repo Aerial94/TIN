@@ -59,3 +59,19 @@ char *DNSQuestion::toPacketFormat(std::string domainName) {
 DNSQuestion::DNSQuestion(const std::string &qname) {
     this->qname = qname;
 }
+
+int DNSQuestion::setRaw(char *raw) {
+    this->qname.clear();
+    int i = 0;
+    while(raw[i] != 0) {
+        size_t block_size = raw[i];
+        i++;
+        for (int j = 0; j < block_size; j++) {
+            this->qname += raw[i++];
+        }
+        if (raw[i + 1]){
+            this->qname += ".";
+        }
+    }
+    return i+1+4;
+}

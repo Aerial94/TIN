@@ -50,7 +50,7 @@ SCENARIO("DNS Packet should create header fields by parsing raw data buffer") {
     }
 }
 
-SCENARIO("DNSQuestion conversion") {
+SCENARIO("DNSQuestion to raw conversion") {
     GIVEN("www.google.com domain name") {
         std::string domain = "www.google.com";
         WHEN("DNSQuestion converts it to packet format")
@@ -78,6 +78,77 @@ SCENARIO("DNSQuestion conversion") {
                 REQUIRE(name[17] == 1);
                 REQUIRE(name[18] == 0);
                 REQUIRE(name[19] == 1);
+                free(name);
+            }
+        }
+    }
+    GIVEN("elka.pw.edu.pl domain name") {
+        std::string domain = "elka.pw.edu.pl";
+        WHEN("DNSQuestion converts it to packet format")
+        {
+            DNSQuestion question(domain);
+            THEN("name is correctly converted") {
+                char * name = question.getRaw();
+                REQUIRE(name[0] == 4);
+                REQUIRE(name[1] == 'e');
+                REQUIRE(name[2] == 'l');
+                REQUIRE(name[3] == 'k');
+                REQUIRE(name[4] == 'a');
+                REQUIRE(name[5] == 2 );
+                REQUIRE(name[6] == 'p');
+                REQUIRE(name[7] == 'w');
+                REQUIRE(name[8] == 3 );
+                REQUIRE(name[9] == 'e');
+                REQUIRE(name[10] == 'd');
+                REQUIRE(name[11] == 'u');
+                REQUIRE(name[12] == 2 );
+                REQUIRE(name[13] == 'p');
+                REQUIRE(name[14] == 'l');
+                REQUIRE(name[15] == '\0');
+                REQUIRE(name[16] == 0);
+                REQUIRE(name[17] == 1);
+                REQUIRE(name[18] == 0);
+                REQUIRE(name[19] == 1);
+                free(name);
+            }
+        }
+    }
+}
+SCENARIO("DNSQuestion from raw conversion") {
+    GIVEN("raw data") {
+        char data[] = {
+                3,'w','w','w',
+                6,'g','o','o','g','l','e',
+                3,'c','o','m',0,
+                0,1,0,1
+        };
+        WHEN("DNSQuestion converts it to string")
+        {
+            DNSQuestion question;
+            int size = question.setRaw(data);
+            THEN("name is correctly converted") {
+                std::string domainName = question.getDomainName();
+                REQUIRE(domainName == "www.google.com");
+                REQUIRE(size == sizeof data);
+            }
+        }
+    }
+    GIVEN("raw data") {
+        char data[] = {
+                3, 'w', 'w', 'w',
+                4, 'e', 'l', 'k', 'a',
+                2, 'p', 'w',
+                3, 'e', 'd', 'u',
+                2, 'p', 'l', 0,
+                0, 1, 0, 1
+        };
+        WHEN("DNSQuestion converts it to string") {
+            DNSQuestion question;
+            int size = question.setRaw(data);
+            THEN("name is correctly converted") {
+                std::string domainName = question.getDomainName();
+                REQUIRE(domainName == "www.elka.pw.edu.pl");
+                REQUIRE(size == sizeof data);
             }
         }
     }
