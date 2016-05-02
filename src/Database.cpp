@@ -66,3 +66,19 @@ HTTPHandler::MessageStatus Database::updateDomain(std::string dName, Domain::Dom
     }
     return HTTPHandler::MessageStatus::NO_IN_DATABASE;
 }
+
+std::string Database::getNextDomain()
+{
+    std::lock_guard<std::mutex> guard(mutex);
+    if(!this->domains.empty() && this->currentPos != this->domains.end())
+    {
+        std::string toReturn = (*this->currentPos).getDomainName();
+        ++(this->currentPos);
+        return toReturn;
+    }
+    else
+    {
+        this->currentPos = this->domains.begin();
+        return "";
+    }
+}

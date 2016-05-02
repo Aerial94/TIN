@@ -103,3 +103,33 @@ SCENARIO("We want to update status of domain")
         }
     }
 }
+
+
+SCENARIO("We want to iterate through domains")
+{
+    GIVEN("Names of domains to add")
+    {
+        std::string domainsToAdd[] = {"google.com", "elka.pw.edu.pl", "raz.dwa.trzy.pl", "cztery.net"};
+        WHEN("We add domains to database")
+        {
+            int i;
+            for(i = 0; i < domainsToAdd->length(); ++i)
+                Database::getInstance().addDomain(domainsToAdd[i]);
+            THEN("We test status")
+            {
+                std::string currentDomain = Database::getInstance().getNextDomain();
+                int j;
+                bool flag = false;
+                for(j = 0;  currentDomain != ""; currentDomain = Database::getInstance().getNextDomain(), ++j)
+                {
+                    if(currentDomain != domainsToAdd[j])
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                REQUIRE(flag == false);
+            }
+        }
+    }
+}

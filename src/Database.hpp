@@ -19,6 +19,7 @@ private:
 
     std::vector<Domain> domains;
     std::mutex mutex;
+    std::vector<Domain>::iterator currentPos;
 
 public:
     static Database & getInstance()
@@ -31,6 +32,7 @@ public:
     HTTPHandler::MessageStatus addDomain(std::string dName);
     HTTPHandler::MessageStatus removeDomain(std::string dName);
     HTTPHandler::MessageStatus updateDomain(std::string dName, Domain::DomainStatus status);
+    std::string getNextDomain();
 };
 
 
