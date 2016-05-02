@@ -1,0 +1,41 @@
+#include "Util.hpp"
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <cstdio>
+
+void Util::deamonize() {
+    pid_t pid;
+
+    /* Fork off the parent process */
+    pid = fork();
+    if (pid < 0) {
+        exit(EXIT_FAILURE);
+    }
+    /* If we got a good PID, then
+       we can exit the parent process. */
+    if (pid > 0) {
+        std::printf("%d\n", pid);
+        exit(EXIT_SUCCESS);
+    }
+    umask(0);
+
+    pid_t sid = setsid();
+    if (sid < 0) {
+        /* Log any failure */
+        exit(EXIT_FAILURE);
+    }
+
+    /* Change the current working directory */
+    if ((chdir("/")) < 0) {
+        /* Log any failure here */
+        exit(EXIT_FAILURE);
+    }
+
+    /* Close out the standard file descriptors */
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+}
+
