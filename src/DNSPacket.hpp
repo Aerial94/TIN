@@ -46,6 +46,7 @@ private:
     int parsePointer;
     std::vector<DNSQuestion> questions;
 public:
+    DNSPacket();
     short getIdentifier() const {
         return identifier;
     }
@@ -86,6 +87,7 @@ public:
     void markAsResponse();
     void markAsQuestion();
 };
+
 
 
 #endif //DNS_CHECKER_DNSPACKET_HPP

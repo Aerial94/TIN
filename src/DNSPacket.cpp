@@ -126,4 +126,9 @@ int DNSQuestion::getSize() {
     return 1 + this->qname.length() + 1 + 4;
 }
 
-
+DNSPacket::DNSPacket() {
+    this->questionCount = 0;
+    this->answerRecordCount = 0;
+    this->authorityRecordCount = 0;
+    this->additionalRecordCount = 0;
+}
