@@ -132,3 +132,19 @@ DNSPacket::DNSPacket() {
     this->authorityRecordCount = 0;
     this->additionalRecordCount = 0;
 }
+
+void DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len) {
+    this->size = 0;
+    if (data[0] & (0x3 << 6)) {
+        size += 2;
+    }
+    size += 4;
+    size += 4;
+    size += 2;
+    size += (data[10] << 8) | data[11];
+}
+
+int DNSAuthoritativeNameServer::getSize() {
+    return this->size;
+}
+

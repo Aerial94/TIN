@@ -52,31 +52,20 @@ SCENARIO("DNS Packet should create header fields by parsing raw data buffer") {
 }
 
 SCENARIO("DNS Packet should crate raw data buffer") {
-    DNSPacket dnsPacket;
-    dnsPacket.markAsQuestion();
-    DNSQuestion q("www.google.com");
-    dnsPacket.addQuestion(q);
-    int size;
-    char * data = dnsPacket.getRaw(&size);
-    UDPSocket udpSocket("8.8.8.8:53");
-    udpSocket.send(data, size);
-    char * rData = (char *) malloc(MAX_UDP_PACKET_SIZE);
-    udpSocket.recive(rData, MAX_UDP_PACKET_SIZE);
 }
 
 SCENARIO("DNSQuestion to raw conversion") {
     GIVEN("www.google.com domain name") {
         std::string domain = "www.google.com";
-        WHEN("DNSQuestion converts it to packet format")
-        {
+        WHEN("DNSQuestion converts it to packet format") {
             DNSQuestion question(domain);
             THEN("name is correctly converted") {
-                char * name = question.getRaw();
+                char *name = question.getRaw();
                 REQUIRE(name[0] == 3);
                 REQUIRE(name[1] == 'w');
                 REQUIRE(name[2] == 'w');
                 REQUIRE(name[3] == 'w');
-                REQUIRE(name[4] == 6 );
+                REQUIRE(name[4] == 6);
                 REQUIRE(name[5] == 'g');
                 REQUIRE(name[6] == 'o');
                 REQUIRE(name[7] == 'o');
@@ -98,24 +87,23 @@ SCENARIO("DNSQuestion to raw conversion") {
     }
     GIVEN("elka.pw.edu.pl domain name") {
         std::string domain = "elka.pw.edu.pl";
-        WHEN("DNSQuestion converts it to packet format")
-        {
+        WHEN("DNSQuestion converts it to packet format") {
             DNSQuestion question(domain);
             THEN("name is correctly converted") {
-                char * name = question.getRaw();
+                char *name = question.getRaw();
                 REQUIRE(name[0] == 4);
                 REQUIRE(name[1] == 'e');
                 REQUIRE(name[2] == 'l');
                 REQUIRE(name[3] == 'k');
                 REQUIRE(name[4] == 'a');
-                REQUIRE(name[5] == 2 );
+                REQUIRE(name[5] == 2);
                 REQUIRE(name[6] == 'p');
                 REQUIRE(name[7] == 'w');
-                REQUIRE(name[8] == 3 );
+                REQUIRE(name[8] == 3);
                 REQUIRE(name[9] == 'e');
                 REQUIRE(name[10] == 'd');
                 REQUIRE(name[11] == 'u');
-                REQUIRE(name[12] == 2 );
+                REQUIRE(name[12] == 2);
                 REQUIRE(name[13] == 'p');
                 REQUIRE(name[14] == 'l');
                 REQUIRE(name[15] == '\0');
@@ -128,16 +116,16 @@ SCENARIO("DNSQuestion to raw conversion") {
         }
     }
 }
+
 SCENARIO("DNSQuestion from raw conversion") {
     GIVEN("raw data") {
         char data[] = {
-                3,'w','w','w',
-                6,'g','o','o','g','l','e',
-                3,'c','o','m',0,
-                0,1,0,1
+                3, 'w', 'w', 'w',
+                6, 'g', 'o', 'o', 'g', 'l', 'e',
+                3, 'c', 'o', 'm', 0,
+                0, 1, 0, 1
         };
-        WHEN("DNSQuestion converts it to string")
-        {
+        WHEN("DNSQuestion converts it to string") {
             DNSQuestion question;
             int size = question.setRaw(data);
             THEN("name is correctly converted") {
@@ -162,6 +150,54 @@ SCENARIO("DNSQuestion from raw conversion") {
             THEN("name is correctly converted") {
                 std::string domainName = question.getDomainName();
                 REQUIRE(domainName == "www.elka.pw.edu.pl");
+                REQUIRE(size == sizeof data);
+            }
+        }
+    }
+}
+
+SCENARIO("DNSAuthorityServer from raw conversion") {
+    GIVEN("raw data") {
+        unsigned char data[] = {
+                0xc0, 0x17, 0x00, 0x02, 0x00, 0x01, 0x00, 0x02, 0xa3, 0x00,
+                0x00, 0x14,
+                0x01, 0x6d, 0x0c, 0x67, 0x74, 0x6c, 0x64, 0x2d, 0x73, 0x65,
+                0x72, 0x76, 0x65,
+                0x72, 0x73, 0x03, 0x6e, 0x65, 0x74, 0x00
+        };
+        WHEN("DNSAuthorityServer converts it") {
+            DNSAuthoritativeNameServer authoritativeNameServer;
+            authoritativeNameServer.fromRaw(data, 0);
+            THEN("conversion is correct") {
+                int size = authoritativeNameServer.getSize();
+                REQUIRE(size == sizeof data);
+            }
+        }
+    }
+    GIVEN("raw data") {
+        unsigned char data[] = {
+                0xc0,
+                0x17,
+                0x00,
+                0x02,
+                0x00,
+                0x01,
+                0x00,
+                0x02,
+                0xa3,
+                0x00,
+                0x00,
+                0x04,
+                0x01,
+                0x6c,
+                0xc0,
+                0x2e
+        };
+        WHEN("DNSAuthorityServer converts it") {
+            DNSAuthoritativeNameServer authoritativeNameServer;
+            authoritativeNameServer.fromRaw(data, 0);
+            THEN("conversion is correct") {
+                int size = authoritativeNameServer.getSize();
                 REQUIRE(size == sizeof data);
             }
         }

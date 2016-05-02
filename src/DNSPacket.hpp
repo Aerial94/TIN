@@ -25,7 +25,31 @@ public:
     int getSize();
 };
 
-class DNSAnswer {};
+class DNSAnswer {
+
+};
+
+class DNSAuthoritativeNameServer {
+    std::string name;
+    short type;
+    unsigned int timeToLive;
+    short dataLenght;
+    std::string nameServer;
+    int size;
+public:
+    void fromRaw(unsigned char *data, int len);
+
+    int getSize();
+};
+
+class DNSAdditionalRecord {
+    std::string name;
+    short type;
+    short classType;
+    int timeToLive;
+    short dataLenght;
+    int address;
+};
 
 class DNSPacket {
 private:
@@ -45,6 +69,7 @@ private:
     short generateIdentifier();
     int parsePointer;
     std::vector<DNSQuestion> questions;
+    std::vector<DNSAnswer> answers;
 public:
     DNSPacket();
     short getIdentifier() const {
@@ -67,20 +92,20 @@ public:
     }
 
     char getResponseCode() const {
-        return  this->responseCode;
+        return this->responseCode;
     }
     short getQuestionCount() const {
         return  this->questionCount;
     }
     short getAnswerCount() const {
-        return  this->answerRecordCount;
+        return this->answerRecordCount;
     }
     short getAuthorityCount() const {
-        return  this->authorityRecordCount;
+        return this->authorityRecordCount;
     }
 
     short getAdditionalCount() const {
-        return  this->additionalRecordCount;
+        return this->additionalRecordCount;
     }
     void addQuestion(DNSQuestion dnsQuestion);
     char *getRaw(int *size);
