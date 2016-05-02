@@ -1,6 +1,12 @@
 #include "HTTPHandler.hpp"
 #include "Database.hpp"
 
+Json::Value HTTPHandler::testAction(std::string &json)
+{
+    chooseAction(json);
+    return this->response;
+}
+
 void HTTPHandler::parse(std::string json)
 {
     Json::Value root;
@@ -97,11 +103,4 @@ void HTTPHandler::prepareResponse()
     this->response["task"]["command"] = this->command;
     this->response["task"]["domains"] = this->vecOfDomains;
     this->response["result"] = vecOfDomainStatusPairs;
-}
-
-std::string HTTPHandler::testAction(std::string &json) {
-    chooseAction(json);
-    Json::StyledWriter writer;
-    std::string response = writer.write(this->response);
-    return response;
 }

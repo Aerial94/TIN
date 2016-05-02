@@ -17,10 +17,13 @@ public:
         REQUEST_NO_COMMAND,
         REQUEST_NO_DOMAINS
     };
-    const std::string getDescription() const {
+    const std::string getDescription() const
+    {
         return this->description;
     }
-    void setDescription(const std::string description) {
+    void setDescription(const std::string description)
+    {
+
         this->description = description;
     }
 private:
@@ -39,7 +42,7 @@ class HTTPHandler
 public:
     enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
 
-    std::string testAction(std::string &json);
+    Json::Value testAction(std::string &json);
 
 private:
     const std::string addAction = "add";
