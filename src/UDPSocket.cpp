@@ -33,5 +33,25 @@ UDPSocket &UDPSocket::operator>>(std::string &data) {
     return *this;
 }
 
+UDPSocket &UDPSocket::recive(void *data, int size) {
+    socklen_t aSize = this->internalAddress.getSize();
+    int recSize = recvfrom(this->socketFileDescriptor, data,
+                       size, 0,
+                       this->internalAddress.toInternalAddressStructPointer(),
+                       &aSize);
+    return *this;
+}
+
+UDPSocket &UDPSocket::send(void *data, int size) {
+    int status = sendto(this->socketFileDescriptor, data, size, 0,
+           this->internalAddress.toInternalAddressStructPointer(),
+           this->internalAddress.getSize());
+    return *this;
+}
+
+
+
+
+
 
 

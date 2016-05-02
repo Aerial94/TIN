@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "../src/DNSPacket.hpp"
+#include "../src/UDPSocket.hpp"
 
 SCENARIO("DNS Packet should create header fields by parsing raw data buffer") {
     DNSPacket dnsPacket;
@@ -48,6 +49,19 @@ SCENARIO("DNS Packet should create header fields by parsing raw data buffer") {
             }
         }
     }
+}
+
+SCENARIO("DNS Packet should crate raw data buffer") {
+    DNSPacket dnsPacket;
+    dnsPacket.markAsQuestion();
+    DNSQuestion q("www.google.com");
+    dnsPacket.addQuestion(q);
+    int size;
+    char * data = dnsPacket.getRaw(&size);
+    UDPSocket udpSocket("8.8.8.8:53");
+    udpSocket.send(data, size);
+    char * rData = (char *) malloc(MAX_UDP_PACKET_SIZE);
+    udpSocket.recive(rData, MAX_UDP_PACKET_SIZE);
 }
 
 SCENARIO("DNSQuestion to raw conversion") {

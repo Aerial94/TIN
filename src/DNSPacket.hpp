@@ -22,12 +22,29 @@ public:
 
     char *getRaw();
     int setRaw(char *raw);
+    int getSize();
 };
 
 class DNSAnswer {};
 
 class DNSPacket {
 private:
+    short identifier;
+    bool response;
+    char opcode;
+    bool answerIsAuthoritative;
+    bool truncated;
+    bool recursionDesired;
+    bool recursionAvailable;
+    char responseCode;
+    short questionCount;
+    short answerRecordCount;
+    short authorityRecordCount;
+    short additionalRecordCount;
+
+    short generateIdentifier();
+    int parsePointer;
+    std::vector<DNSQuestion> questions;
 public:
     short getIdentifier() const {
         return identifier;
@@ -64,23 +81,10 @@ public:
     short getAdditionalCount() const {
         return  this->additionalRecordCount;
     }
-
-    short identifier;
-    bool response;
-    char opcode;
-    bool answerIsAuthoritative;
-    bool truncated;
-    bool recursionDesired;
-    bool recursionAvailable;
-    char responseCode;
-    short questionCount;
-    short answerRecordCount;
-    short authorityRecordCount;
-    short additionalRecordCount;
-
-    short generateIdentifier();
-    int parsePointer;
-    std::vector<DNSQuestion> questions;
+    void addQuestion(DNSQuestion dnsQuestion);
+    char *getRaw(int *size);
+    void markAsResponse();
+    void markAsQuestion();
 };
 
 

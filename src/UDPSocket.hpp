@@ -16,7 +16,9 @@ public:
     virtual ~UDPSocket();
     void bind(SocketAddress & socketAddress);
     UDPSocket &operator<<(const std::string &data);
+    UDPSocket &send(void * data, int size);
     UDPSocket &operator>>(std::string &data);
+    UDPSocket &recive(void * data, int size);
 };
 
 
