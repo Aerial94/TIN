@@ -38,14 +38,8 @@ class HTTPHandler
 {
 public:
     enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
-    std::string testAction(std::string json)
-    {
-        chooseAction(json);
-        //Json::StyledWriter writer;
-        //std::string response = writer.write(this->response);
-        std::cout << this->response << std::endl;
-        return "cos";
-    }
+
+    std::string testAction(std::string &json);
 
 private:
     const std::string addAction = "add";
@@ -59,7 +53,7 @@ private:
     Json::Value pair;
     Json::Value vecOfDomainStatusPairs;
 
-    std::string chooseAction(std::string json);
+    std::string chooseAction(std::string &json);
     void parse(std::string json);
     std::string statusToString(HTTPHandler::MessageStatus s);
     void prepareResponse();

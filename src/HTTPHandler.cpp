@@ -38,10 +38,9 @@ void HTTPHandler::parse(std::string json)
     }
 }
 
-std::string HTTPHandler::chooseAction(std::string json)
+std::string HTTPHandler::chooseAction(std::string &json)
 {
     parse(json);
-
     if(this->command == addAction)
     {
         for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
@@ -76,6 +75,7 @@ std::string HTTPHandler::chooseAction(std::string json)
         }
     }
     prepareResponse();
+    return  "";
 }
 
 std::string HTTPHandler::statusToString(HTTPHandler::MessageStatus s)
@@ -97,4 +97,11 @@ void HTTPHandler::prepareResponse()
     this->response["task"]["command"] = this->command;
     this->response["task"]["domains"] = this->vecOfDomains;
     this->response["result"] = vecOfDomainStatusPairs;
+}
+
+std::string HTTPHandler::testAction(std::string &json) {
+    chooseAction(json);
+    Json::StyledWriter writer;
+    std::string response = writer.write(this->response);
+    return response;
 }
