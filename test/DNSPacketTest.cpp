@@ -203,3 +203,22 @@ SCENARIO("DNSAuthorityServer from raw conversion") {
         }
     }
 }
+
+SCENARIO("DNSAditional from raw conversion") {
+    GIVEN("raw data") {
+        unsigned char data[] = {
+                0xc0,0x2c, 0x00,0x01,0x00,0x01,0x00,0x02,0xa3,0x00,0x00,0x04,
+                0xc0,0x37,0x53,0x1e
+        };
+        WHEN("DNSAdditional converts it") {
+            DNSAdditionalRecord additionalRecord;
+            additionalRecord.fromRaw(data,0);
+            THEN("conversion is correct") {
+                int size = additionalRecord.getSize();
+                REQUIRE(size == sizeof data);
+                int ip = additionalRecord.getIP();
+                REQUIRE(ip == 0xc037531e);
+            }
+        }
+    }
+}

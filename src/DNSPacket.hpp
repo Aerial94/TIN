@@ -49,6 +49,12 @@ class DNSAdditionalRecord {
     int timeToLive;
     short dataLenght;
     int address;
+    int size;
+public:
+    void fromRaw(unsigned char *data, int len);
+    int getSize();
+
+    int getIP();
 };
 
 class DNSPacket {

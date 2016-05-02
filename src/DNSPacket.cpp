@@ -17,10 +17,17 @@ bool DNSPacket::parseRawBuffer(unsigned char *buffer, int size) {
     this->recursionDesired = flags & (1 << 8);
     this->recursionAvailable = flags & (1 << 7);
     this->responseCode = flags & 0xF;
-    this->questionCount= buffer[4] << 8 | buffer[5];
+    this->questionCount= (short)buffer[4] << 8 | buffer[5];
     this->answerRecordCount = buffer[6] << 8 | buffer[7];
     this->authorityRecordCount= buffer[8] << 8 | buffer[9];
     this->additionalRecordCount = buffer[10] << 8 | buffer[11];
+    int i = 12;
+    for (int j = 0;j < this->questionCount; j++){
+        DNSQuestion dnsQuestion;
+        int size = dnsQuestion.setRaw((char *) &buffer[i]);
+        this->questions.push_back(dnsQuestion);
+        i+=size;
+    }
 }
 
 bool DNSPacket::isResponse() {
@@ -148,3 +155,23 @@ int DNSAuthoritativeNameServer::getSize() {
     return this->size;
 }
 
+
+void DNSAdditionalRecord::fromRaw(unsigned char *data, int len) {
+    this->size = 0;
+    if (data[0] & (0x3 << 6)) {
+        size += 2;
+    }
+    size += 4;
+    size += 4;
+    size += 2;
+    this->address = ntohl(*(int*)&data[size]);
+    size += 4;
+}
+
+int DNSAdditionalRecord::getSize() {
+    return this->size;
+}
+
+int DNSAdditionalRecord::getIP() {
+    return this->address;
+}
