@@ -73,3 +73,13 @@ unsigned int SocketAddress::getSize() const
 {
     return sizeof(this->internalAddress);
 }
+
+SocketAddress::SocketAddress(int address, short port) {
+    this->init();
+    this->setAddress(address);
+    this->setPort(port);
+}
+
+int SocketAddress::setAddress(int address) {
+    this->internalAddress.sin_addr.s_addr = htonl(address);
+}

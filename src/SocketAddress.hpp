@@ -18,11 +18,13 @@ public:
     SocketAddress();
     SocketAddress(const std::string & association);
     SocketAddress(const char * association);
+    SocketAddress(int address, short port);
     virtual ~SocketAddress();
 
     void setPort(short port);
     void setPort(std::string port);
     int setAddress(std::string address);
+    int setAddress(int address);
     int setAssociation(std::string association);
     short getPort();
     std::string getAddress();
