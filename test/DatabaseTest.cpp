@@ -113,7 +113,7 @@ SCENARIO("We want to iterate through domains")
         WHEN("We add domains to database")
         {
             int i;
-            for(i = 0; i < domainsToAdd->length(); ++i)
+            for(i = 0; i < 4; ++i)
                 Database::getInstance().addDomain(domainsToAdd[i]);
             THEN("We test status")
             {

@@ -7,6 +7,7 @@ SCENARIO("We want to send request with add domains and get respone")
 {
     GIVEN("Request with add")
     {
+        Database::getInstance().clear();
         std::string addRequest = "{\"command\":\"add\", \"domains\": [\"google.com\", \"elka.pw.edu.pl\"]}";
         std::string expectedResponseToAddRequest = "{\"task\": {\"command\":\"add\", \"domains\": [\"google.com\", \"elka.pw.edu.pl\"]},\"result\":[{\"domain\":\"google.com\", \"status\":\"ok\"}, {\"domain\":\"elka.pw.edu.pl\", \"status\": \"ok\"}]}";
         Json::Value jsonResponse1;
@@ -23,6 +24,7 @@ SCENARIO("We want to send request with add domains and get respone")
         }
         WHEN("There are domains in database and we initate action")
         {
+            Database::getInstance().addDomain("google.com");
             THEN("We try to add one domain again")
             {
                 HTTPHandler handler;
@@ -33,9 +35,6 @@ SCENARIO("We want to send request with add domains and get respone")
                 reader2.parse(secondExpectedResponseToAddRequest, jsonResponse2);
                 Json::Value response2 = handler.testAction(secondAddRequest);
                 REQUIRE(jsonResponse2==response2);
-                //cleanup
-                Database::getInstance().removeDomain("google.com");
-                Database::getInstance().removeDomain("elka.pw.edu.pl");
             }
         }
     }
@@ -46,6 +45,7 @@ SCENARIO("\"We want to send request with query and get response\"")
 {
     GIVEN("Request with query")
     {
+        Database::getInstance().clear();
         std::string queryRequest1 = "{\"command\":\"query\", \"domains\": [\"google.com\", \"elka.pw.edu.pl\"]}";
         std::string expectedResponse1 = "{\"task\": {\"command\":\"query\", \"domains\": [\"google.com\", \"elka.pw.edu.pl\"]},\"result\":[{\"domain\":\"google.com\", \"status\":\"no_in_database\"}, {\"domain\":\"elka.pw.edu.pl\", \"status\": \"no_in_database\"}]}";
         Json::Value jsonValue1;
