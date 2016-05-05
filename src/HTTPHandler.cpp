@@ -1,5 +1,6 @@
 #include "HTTPHandler.hpp"
 #include "Database.hpp"
+#include "Logger.hpp"
 
 Json::Value HTTPHandler::testAction(std::string &json)
 {
@@ -18,6 +19,7 @@ void HTTPHandler::parse(std::string json)
         std::string details = reader.getFormattedErrorMessages();
         HTTPHandlerException httpHandlerException(HTTPHandlerException::Type::REQUEST_SYNTAX_ERROR);
         httpHandlerException.setDescription(details);
+        Logger::getInstance().logWarning("HTTPHandler", "Invalid input json");
         throw httpHandlerException;
     }
 
@@ -27,6 +29,7 @@ void HTTPHandler::parse(std::string json)
     {
         HTTPHandlerException httpHandlerException(HTTPHandlerException::Type::REQUEST_NO_COMMAND);
         httpHandlerException.setDescription("No command was specified in json file");
+        Logger::getInstance().logWarning("HTTPHandler", "Invalid input json");
         throw httpHandlerException;
     }
 
@@ -40,13 +43,15 @@ void HTTPHandler::parse(std::string json)
     {
         HTTPHandlerException httpHandlerException(HTTPHandlerException::Type::REQUEST_NO_DOMAINS);
         httpHandlerException.setDescription("No domains were specified in json file");
+        Logger::getInstance().logWarning("HTTPHandler", "Invalid input json");
         throw httpHandlerException;
     }
 }
 
-std::string HTTPHandler::chooseAction(std::string &json)
+void HTTPHandler::chooseAction(std::string &json)
 {
     parse(json);
+    std::string domainNames = getAllDomainNames();
     if(this->command == addAction)
     {
         for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
@@ -57,6 +62,7 @@ std::string HTTPHandler::chooseAction(std::string &json)
             this->pair["status"] = statusToString(status);
             this->vecOfDomainStatusPairs.append(this->pair);
         }
+        Logger::getInstance().logInfo("HTTPHandler", "The following domains were added: " + domainNames);
     }
     else if(this->command == removeAction)
     {
@@ -67,6 +73,7 @@ std::string HTTPHandler::chooseAction(std::string &json)
             HTTPHandler::MessageStatus status = Database::getInstance().removeDomain(*it);
             this->pair["status"] = statusToString(status);
             this->vecOfDomainStatusPairs.append(this->pair);
+            Logger::getInstance().logInfo("HTTPHandler", "The following domains were removed: " + domainNames);
         }
     }
     else if(this->command == queryAction)
@@ -78,10 +85,10 @@ std::string HTTPHandler::chooseAction(std::string &json)
             HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
             this->pair["status"] = statusToString(status);
             this->vecOfDomainStatusPairs.append(this->pair);
+            Logger::getInstance().logInfo("HTTPHandler", "The following domains were queued: " + domainNames);
         }
     }
     prepareResponse();
-    return  "";
 }
 
 std::string HTTPHandler::statusToString(HTTPHandler::MessageStatus s)
@@ -103,4 +110,17 @@ void HTTPHandler::prepareResponse()
     this->response["task"]["command"] = this->command;
     this->response["task"]["domains"] = this->vecOfDomains;
     this->response["result"] = vecOfDomainStatusPairs;
+}
+
+std::string HTTPHandler::getAllDomainNames()
+{
+    std::string domainNames = "";
+    for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
+    {
+        domainNames += *it;
+        domainNames += ", ";
+    }
+    domainNames.pop_back();
+    domainNames.pop_back();
+    return domainNames;
 }

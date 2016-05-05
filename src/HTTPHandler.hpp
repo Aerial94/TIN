@@ -56,10 +56,11 @@ private:
     Json::Value pair;
     Json::Value vecOfDomainStatusPairs;
 
-    std::string chooseAction(std::string &json);
+    void chooseAction(std::string &json);
     void parse(std::string json);
     std::string statusToString(HTTPHandler::MessageStatus s);
     void prepareResponse();
+    std::string getAllDomainNames();
 
 };
 
