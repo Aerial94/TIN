@@ -124,3 +124,10 @@ std::string HTTPHandler::getAllDomainNames()
     domainNames.pop_back();
     return domainNames;
 }
+
+std::string HTTPHandler::getResponse(std::string json)
+{
+    chooseAction(json);
+    Json::FastWriter writer;
+    return writer.write(this->response);
+}

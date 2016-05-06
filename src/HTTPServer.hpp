@@ -9,6 +9,7 @@
 class HTTPServer
 {
 public:
+	HTTPServer();
 	void listen();
 private:
 	Configuration configuration;

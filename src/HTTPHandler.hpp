@@ -43,6 +43,7 @@ public:
     enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
 
     Json::Value testAction(std::string &json);
+    std::string getResponse(std::string json);
 
 private:
     const std::string addAction = "add";

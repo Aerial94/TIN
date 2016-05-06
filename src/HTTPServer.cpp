@@ -4,10 +4,10 @@
 HTTPServer::HTTPServer()
 {
 	SocketAddress address;
-	address.setAddress(configuration.getHttpServerAddress);
-	address.setPort(configuration.getHttpServerPort);
+	address.setAddress(configuration.getHttpServerAddress());
+	address.setPort(configuration.getHttpServerPort());
 	this->socket.bind(address);
-	this->socket.listen(configuration.getHttpServerMaxThreads);
+	this->socket.listen(configuration.getHttpServerMaxThreads());
 }
 
 void HTTPServer::listen()
@@ -31,12 +31,12 @@ void HTTPServer::response(TCPSocket socekt)
 	else
 	{
 		std::string json = this->get_json(http_request);
-		std::string response = hander.testAction(json);
+		std::string response = hander.getResponse(json);
 		this->valid_request(socekt, response);
 	}
 }
 
-bool HTTPServer::get_json(std::string request)
+std::string HTTPServer::get_json(std::string & request)
 {
 
 }
@@ -50,3 +50,9 @@ void HTTPServer::invalid_request(TCPSocket socket)
 {
 
 }
+
+bool HTTPServer::is_request_valid(std::string &request)
+{
+    return false;
+}
+
