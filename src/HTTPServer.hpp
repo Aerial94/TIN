@@ -1,8 +1,9 @@
 #ifndef DNS_CHECKER_HTTPSERVER_H
 #define DNS_CHECKER_HTTPSERVER_H
 
-#include <thread>
-#include "HTTPHander.hpp"
+#include "HTTPHandler.hpp"
+#include "Configuration.hpp"
+#include "TCPSocket.hpp"
 #include <list>
 
 class HTTPServer
@@ -10,9 +11,14 @@ class HTTPServer
 public:
 	void listen();
 private:
+	Configuration configuration;
 	TCPSocket socket;
-	void wait_for_reuqest();
-
+	HTTPHandler hander;
+	void response(TCPSocket socekt);
+	bool is_request_valid(std::string& request);
+	std::string get_json(std::string& request);
+	void valid_request(TCPSocket, std::string json);
+	void invalid_request(TCPSocket);
 };
 
 
