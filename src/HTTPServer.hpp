@@ -17,7 +17,7 @@ private:
 					"Content-Type: text/html; charset=iso-8859-1\n"
 					"Connection: Closed\n";
 
-	const std::string invalid_request = "HTTP/1.1 200 OK\n"
+	const std::string valid_request = "HTTP/1.1 200 OK\n"
 			"Content-Length: 88\n"
 			"Content-Type: application/json\n"
 			"Connection: Closed\n"
