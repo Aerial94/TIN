@@ -1,5 +1,8 @@
 #include "HTTPServer.hpp"
 #include <thread>
+#include <sstream>
+#include <iostream>
+#include <string>
 
 HTTPServer::HTTPServer()
 {
@@ -20,39 +23,50 @@ void HTTPServer::listen()
 	}
 }
 
-void HTTPServer::response(TCPSocket socekt)
+void HTTPServer::response(TCPSocket& socekt)
 {
-	std::string http_request;
+	std::string http_request, respone;
 	socket >> http_request;
 	if (!this->is_request_valid(http_request))
 	{
-		this->invalid_request(socket);
+		respone = this->invalid_request(socket);
 	}
 	else
 	{
 		std::string json = this->get_json(http_request);
 		std::string response = hander.getResponse(json);
-		this->valid_request(socekt, response);
+		response = this->valid_request(socekt, response);
 	}
+	socket << respone;
 }
 
 std::string HTTPServer::get_json(std::string & request)
 {
-
+	std::string line, json;
+	std::istringstream iss(temp);
+	while(getline(iss,line) && !line.empty());
+	while(getline(iss,line)){
+		json += line;
+	}
+	return json;
 }
 
-void HTTPServer::valid_request(TCPSocket socket, std::string respone_json)
+std::string HTTPServer::valid_request(std::string& respone_json)
 {
-
+	std::string respone(this->valid_request);
+	respone = respone + "\n\n" + respone_json;
+	return respone;
 }
 
-void HTTPServer::invalid_request(TCPSocket socket)
+std::string HTTPServer::invalid_request()
 {
+	std::string respone(this->invalid_request);
+	return respone
 
 }
 
 bool HTTPServer::is_request_valid(std::string &request)
 {
-    return false;
+    return (request.find("POST") != std::string::npos);
 }
 
