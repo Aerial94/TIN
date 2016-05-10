@@ -2,12 +2,13 @@
 #define DNS_CHECKER_DNSPOOLER_HPP
 
 #include <thread>
+#include <vector>
 
 class DNSPooler {
-    static const std::string rootServers[];
     int interval;
     void pool();
     void refreshDomains();
+    std::vector<std::string> rootServers;
 public:
     DNSPooler(int interval);
     void run();

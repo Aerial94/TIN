@@ -53,7 +53,7 @@ class DNSAuthoritativeNameServer {
     std::string nameServer;
     int size;
 public:
-    void fromRaw(unsigned char *data, int len);
+    bool fromRaw(unsigned char *data, int len);
 
     int getSize();
 };
@@ -67,7 +67,7 @@ class DNSAdditionalRecord {
     int address;
     int size;
 public:
-    void fromRaw(unsigned char *data, int len);
+    bool fromRaw(unsigned char *data, int len);
     int getSize();
 
     int getIP();
@@ -92,6 +92,7 @@ private:
     int parsePointer;
     std::vector<DNSQuestion> questions;
     std::vector<DNSAnswer> answers;
+    std::vector<DNSAdditionalRecord> additional;
 public:
     DNSPacket();
     short getIdentifier() const {
@@ -133,6 +134,9 @@ public:
     char *getRaw(int *size);
     void markAsResponse();
     void markAsQuestion();
+    bool isOk();
+    std::vector<DNSAdditionalRecord>& getAdditional();
+
 };
 
 

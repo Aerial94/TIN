@@ -53,7 +53,7 @@ std::string HTTPServer::get_json(std::string & request)
 }
 
 std::string HTTPServer::valid_request_function(std::string &response_json)
-{	
+{
 	std::string response(this->valid_request);
 	size_t f = response.find("{0}");
 	response.replace(f, std::string("{0}").length(), std::to_string(response_json.size()));

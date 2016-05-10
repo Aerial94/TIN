@@ -217,7 +217,7 @@ SCENARIO("DNSAditional from raw conversion") {
                 int size = additionalRecord.getSize();
                 REQUIRE(size == sizeof data);
                 int ip = additionalRecord.getIP();
-                REQUIRE(ip == 0xc037531e);
+                REQUIRE(ip == 0x1e5337c0);
             }
         }
     }
