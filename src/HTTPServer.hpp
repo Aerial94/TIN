@@ -20,15 +20,16 @@ private:
 	const std::string valid_request = "HTTP/1.1 200 OK\n"
 			"Content-Length: 88\n"
 			"Content-Type: application/json\n"
-			"Connection: Closed\n"
+			"Connection: Closed\n";
 	Configuration configuration;
 	TCPSocket socket;
-	HTTPHandler hander;
-	void response(TCPSocket& socekt);
+	HTTPHandler handler;
+
+	void response(TCPSocket& socket);
 	bool is_request_valid(std::string& request);
 	std::string get_json(std::string& request);
-	void valid_request(std::string& json);
-	void invalid_request();
+	std::string valid_request_function(std::string &response_json);
+	std::string invalid_request_function();
 };
 
 

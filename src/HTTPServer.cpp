@@ -1,8 +1,7 @@
 #include "HTTPServer.hpp"
 #include <thread>
 #include <sstream>
-#include <iostream>
-#include <string>
+
 
 HTTPServer::HTTPServer()
 {
@@ -18,32 +17,32 @@ void HTTPServer::listen()
 	while (1) 
 	{
 		TCPSocket socket = this->socket.accept();
-		std::thread thread(&HTTPServer::response, this, socket);
+		std::thread thread(this);
 		thread.detach();
 	}
 }
 
-void HTTPServer::response(TCPSocket& socekt)
+void HTTPServer::response(TCPSocket& socket)
 {
-	std::string http_request, respone;
+	std::string http_request, response;
 	socket >> http_request;
 	if (!this->is_request_valid(http_request))
 	{
-		respone = this->invalid_request(socket);
+		response = this->invalid_request_function();
 	}
 	else
 	{
 		std::string json = this->get_json(http_request);
-		std::string response = hander.getResponse(json);
-		response = this->valid_request(socekt, response);
+		std::string jsonResponse = handler.getResponse(json);
+		response = this->valid_request_function(jsonResponse);
 	}
-	socket << respone;
+	socket << response;
 }
 
 std::string HTTPServer::get_json(std::string & request)
 {
 	std::string line, json;
-	std::istringstream iss(temp);
+	std::istringstream iss(request);
 	while(getline(iss,line) && !line.empty());
 	while(getline(iss,line)){
 		json += line;
@@ -51,17 +50,17 @@ std::string HTTPServer::get_json(std::string & request)
 	return json;
 }
 
-std::string HTTPServer::valid_request(std::string& respone_json)
+std::string HTTPServer::valid_request_function(std::string &response_json)
 {
-	std::string respone(this->valid_request);
-	respone = respone + "\n\n" + respone_json;
-	return respone;
+	std::string response(this->valid_request);
+	response = response + "\n\n" + response_json;
+	return response;
 }
 
-std::string HTTPServer::invalid_request()
+std::string HTTPServer::invalid_request_function()
 {
-	std::string respone(this->invalid_request);
-	return respone
+	std::string response(this->invalid_request);
+	return response;
 
 }
 
