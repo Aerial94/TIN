@@ -21,7 +21,6 @@ private:
 			"Content-Length: {0}\r\n"
 			"Content-Type: application/json\r\n"
 			"Connection: Closed\r\n";
-	Configuration configuration;
 	TCPSocket socket;
 	HTTPHandler handler;
 

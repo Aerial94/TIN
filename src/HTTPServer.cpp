@@ -6,6 +6,7 @@
 
 HTTPServer::HTTPServer()
 {
+	Configuration configuration = Configuration::getInstance();
 	SocketAddress address;
 	address.setAddress(configuration.getHttpServerAddress());
 	address.setPort(configuration.getHttpServerPort());
