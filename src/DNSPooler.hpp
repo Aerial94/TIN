@@ -4,6 +4,7 @@
 #include <thread>
 
 class DNSPooler {
+    static const std::string rootServers[];
     int interval;
     void pool();
     void refreshDomains();

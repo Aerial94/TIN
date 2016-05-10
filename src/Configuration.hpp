@@ -11,7 +11,7 @@ class ConfigurationException
 public:
     enum Type {
         NO_CONFIG_FILE,
-        CONFIG_FILE_EMPTY,
+        CONFIG_FILEUXP1A_EMPTY,
         CONFIG_FILE_SYNTAX_ERROR,
         INCOMPLETE_CONFIG_FILE
     };
@@ -36,7 +36,7 @@ class Configuration {
 public:
     Configuration();
     virtual ~Configuration() { }
-    Configuration& getInstance();
+    static Configuration& getInstance();
 
     short getHttpServerPort() const {
         return httpServerPort;
@@ -65,6 +65,8 @@ public:
         return readyToUse;
     }
 
+    void parse(std::string fileName);
+    void parse();
 private:
     bool readyToUse;
     std::string httpServerAddress;
@@ -76,7 +78,6 @@ private:
     int dnsPoolerInterval;
     Logger::LogLevel logLevel;
 
-    void parse(std::string fileName);
     void parseLogLevel(const Json::Value &root);
 };
 

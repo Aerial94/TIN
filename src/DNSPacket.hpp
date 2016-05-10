@@ -6,6 +6,22 @@
 #include <string>
 #include <vector>
 
+class FQDN {
+    std::string name;
+private:
+    short pointer;
+public:
+    FQDN() {
+        this->pointer = 0;
+    }
+    char * toRaw();
+    void fromRaw(unsigned char *name);
+    std::string getName();
+    bool havePointer();
+    short getPointer();
+
+};
+
 class DNSQuestion {
 private:
     std::string qname;

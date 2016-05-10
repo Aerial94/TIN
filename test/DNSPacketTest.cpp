@@ -222,3 +222,30 @@ SCENARIO("DNSAditional from raw conversion") {
         }
     }
 }
+
+SCENARIO("FQDN from raw conversion") {
+    GIVEN("raw data") {
+        unsigned char data[] = {
+                0xc0,0x2c
+        };
+        WHEN("FQDN converts it") {
+            FQDN fqdn;
+            fqdn.fromRaw(data);
+            THEN("conversion is correct") {
+                REQUIRE(fqdn.getPointer()== 0x2c);
+            }
+        }
+    }
+    GIVEN("raw data") {
+        unsigned char data[] = {
+                0xc0,0x2d
+        };
+        WHEN("FQDN converts it") {
+            FQDN fqdn;
+            fqdn.fromRaw(data);
+            THEN("conversion is correct") {
+                REQUIRE(fqdn.getPointer()== 0x2d);
+            }
+        }
+    }
+}

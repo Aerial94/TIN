@@ -6,6 +6,7 @@
 #include <cstdio>
 
 void Util::deamonize() {
+    std::puts("deamonizing...");
     pid_t pid;
 
     /* Fork off the parent process */
@@ -16,7 +17,7 @@ void Util::deamonize() {
     /* If we got a good PID, then
        we can exit the parent process. */
     if (pid > 0) {
-        std::printf("%d\n", pid);
+        std::printf("Process PID: %d\n", pid);
         exit(EXIT_SUCCESS);
     }
     umask(0);

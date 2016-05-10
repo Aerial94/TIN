@@ -175,3 +175,64 @@ int DNSAdditionalRecord::getSize() {
 int DNSAdditionalRecord::getIP() {
     return this->address;
 }
+
+char *FQDN::toRaw() {
+    char *rawData = (char *) std::malloc(1 + this->name.length());
+    int i = 0;
+    std::string domain = this->name;
+    size_t  pos;
+    size_t len;
+    do {
+        pos = domain.find_first_of(".");
+        std::string substr = domain.substr(0, pos);
+        len = substr.length();
+        rawData[i] = (char)len;
+        std::memcpy(&rawData[i+1], substr.c_str(), len);
+        domain.erase(0, len + 1);
+        i += len+1;
+    } while (pos != std::string::npos);
+    rawData[i] = '\0';
+    return rawData;
+}
+
+void FQDN::fromRaw(unsigned char *raw) {
+    this->name.clear();
+    int i = 0;
+    while(raw[i] != 0) {
+        if (raw[i] & 3 << 6) {
+            //pointer case
+            this->pointer = raw[i + 1];
+            break;
+        }
+        char block_size = raw[i];
+        i++;
+        for (int j = 0; j < block_size; j++) {
+            this->name += raw[i++];
+        }
+        if (raw[i + 1]){
+            this->name += ".";
+        }
+    }
+
+}
+
+std::string FQDN::getName() {
+    return this->name;
+}
+
+bool FQDN::havePointer() {
+    return this->pointer != 0;
+}
+
+short FQDN::getPointer() {
+    return this->pointer;
+}
+
+
+
+
+
+
+
+
+

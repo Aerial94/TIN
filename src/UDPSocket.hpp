@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 
 #define MAX_UDP_PACKET_SIZE 1<<9
@@ -12,6 +13,8 @@ class UDPSocket : public  Socket {
 
 public:
     UDPSocket(const SocketAddress &socketAddress);
+    UDPSocket();
+    void setAddress(const SocketAddress & socketAddress);
 
     virtual ~UDPSocket();
     void bind(SocketAddress & socketAddress);
