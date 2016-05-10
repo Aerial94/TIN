@@ -12,15 +12,15 @@ public:
 	HTTPServer();
 	void listen();
 private:
-	const std::string invalid_request = "HTTP/1.1 418 I'm teapot\n"
-					"Content-Length: 230\n"
-					"Content-Type: text/html; charset=iso-8859-1\n"
-					"Connection: Closed\n";
+	const std::string invalid_request = "HTTP/1.1 418 I'm teapot\r\n"
+					"Content-Length: 0\r\n"
+					"Content-Type: text/html;\r\n"
+					"Connection: Closed\r\n";
 
-	const std::string valid_request = "HTTP/1.1 200 OK\n"
-			"Content-Length: 88\n"
-			"Content-Type: application/json\n"
-			"Connection: Closed\n";
+	const std::string valid_request = "HTTP/1.1 200 OK\r\n"
+			"Content-Length: {0}\r\n"
+			"Content-Type: application/json\r\n"
+			"Connection: Closed\r\n";
 	Configuration configuration;
 	TCPSocket socket;
 	HTTPHandler handler;
