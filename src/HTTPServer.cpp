@@ -1,6 +1,7 @@
 #include "HTTPServer.hpp"
 #include <thread>
 #include <sstream>
+#include <functional>
 
 
 HTTPServer::HTTPServer()
@@ -17,7 +18,7 @@ void HTTPServer::listen()
 	while (1) 
 	{
 		TCPSocket socket = this->socket.accept();
-		std::thread thread(this);
+		std::thread thread(&HTTPServer::response, this, std::ref(socket));
 		thread.detach();
 	}
 }
