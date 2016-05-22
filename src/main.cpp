@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     //Util::deamonize();
+    Database::getInstance().addDomain("asd.asd.asd.com");
     Database::getInstance().addDomain("google.com");
     signal(SIGUSR1, sig_handler);
 	HTTPServer server;

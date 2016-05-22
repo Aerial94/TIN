@@ -40,7 +40,7 @@ void SocketAddress::setPort(std::string port)
     this->setPort(p);
 }
 
-int SocketAddress::setAddress(std::string address)
+int SocketAddress::setAddress(const std::string address)
 {
     return inet_aton(address.c_str(), &this->internalAddress.sin_addr);
 }

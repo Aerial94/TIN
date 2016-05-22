@@ -23,7 +23,7 @@ public:
 
     void setPort(short port);
     void setPort(std::string port);
-    int setAddress(std::string address);
+    int setAddress(const std::string address);
     int setAddress(int address);
     int setAssociation(std::string association);
     short getPort();

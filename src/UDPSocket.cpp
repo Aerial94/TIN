@@ -1,11 +1,11 @@
 #include "UDPSocket.hpp"
 
 UDPSocket::UDPSocket() {
-    this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
+    this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 }
 
 UDPSocket::UDPSocket(const SocketAddress &socketAddress) {
-    this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
+    this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     this->setAddress(socketAddress);
 }
 
@@ -53,7 +53,7 @@ UDPSocket &UDPSocket::recive(void *data, int size) {
 }
 
 UDPSocket &UDPSocket::send(void *data, int size) {
-    int status = sendto(this->socketFileDescriptor, data, size, 0,
+    ssize_t status = sendto(this->socketFileDescriptor, data, size, 0,
            this->internalAddress.toInternalAddressStructPointer(),
            this->internalAddress.getSize());
     return *this;

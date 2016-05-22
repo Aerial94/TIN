@@ -11,7 +11,6 @@ class ConfigurationException
 public:
     enum Type {
         NO_CONFIG_FILE,
-        CONFIG_FILEUXP1A_EMPTY,
         CONFIG_FILE_SYNTAX_ERROR,
         INCOMPLETE_CONFIG_FILE
     };

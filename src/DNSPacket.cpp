@@ -28,6 +28,21 @@ bool DNSPacket::parseRawBuffer(unsigned char *buffer, int size) {
         this->questions.push_back(dnsQuestion);
         i+=size;
     }
+    for (int j = 0;j < this->authorityRecordCount; j++){
+        DNSAuthoritativeNameServer authoritativeNameServer;
+        int k;
+        authoritativeNameServer.fromRaw(&buffer[i], k);
+        i+=authoritativeNameServer.getSize();
+    }
+    for (int j = 0;j < this->additionalRecordCount; j++){
+        DNSAdditionalRecord additionalRecord;
+        int k;
+        bool ip = additionalRecord.fromRaw(&buffer[i], i);
+        if (ip) {
+            this->additional.push_back(additionalRecord);
+        }
+        i += additionalRecord.getSize();
+    }
 }
 
 bool DNSPacket::isResponse() {
@@ -140,7 +155,16 @@ DNSPacket::DNSPacket() {
     this->additionalRecordCount = 0;
 }
 
-void DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len) {
+bool DNSPacket::isOk() {
+    return not this->responseCode;
+}
+
+std::vector<DNSAdditionalRecord> &DNSPacket::getAdditional() {
+    return this->additional;
+}
+
+
+bool DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len) {
     this->size = 0;
     if (data[0] & (0x3 << 6)) {
         size += 2;
@@ -149,6 +173,7 @@ void DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len) {
     size += 4;
     size += 2;
     size += (data[10] << 8) | data[11];
+    return true;
 }
 
 int DNSAuthoritativeNameServer::getSize() {
@@ -156,7 +181,7 @@ int DNSAuthoritativeNameServer::getSize() {
 }
 
 
-void DNSAdditionalRecord::fromRaw(unsigned char *data, int len) {
+bool DNSAdditionalRecord::fromRaw(unsigned char *data, int len) {
     this->size = 0;
     if (data[0] & (0x3 << 6)) {
         size += 2;
@@ -164,8 +189,12 @@ void DNSAdditionalRecord::fromRaw(unsigned char *data, int len) {
     size += 4;
     size += 4;
     size += 2;
-    this->address = ntohl(*(int*)&data[size]);
-    size += 4;
+    this->address = *(int*)&data[size];
+    size += (data[10] << 8) | data[11];
+    if (data[2] == 0x0 and data[3] == 0x1c) {
+        return false;
+    }
+    return true;
 }
 
 int DNSAdditionalRecord::getSize() {
@@ -227,12 +256,3 @@ bool FQDN::havePointer() {
 short FQDN::getPointer() {
     return this->pointer;
 }
-
-
-
-
-
-
-
-
-
