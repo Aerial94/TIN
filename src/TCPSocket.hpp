@@ -28,7 +28,8 @@ public:
     int listen(int backlog = 32);
     TCPSocket accept();
     TCPSocket & operator<<(const std::string & data);
-    TCPSocket & operator>>(std::string & data);
+    std::string readLine();
+	std::string read_from_socket(std::size_t size);
     void serveForever(int port);
     void bindAll(int port);
 };

@@ -55,13 +55,13 @@ TCPSocket & TCPSocket::operator<<(const std::string & data)
     return *this;
 }
 
-TCPSocket & TCPSocket::operator>>(std::string & data)
+std::string TCPSocket::readLine()
 {
+	std::string data;
     fd_set rfds;
     int retval;
     ssize_t recive_size = 0;
-    int bufferSize = 1 << 10;
-    char buffer[bufferSize];
+    char* buffer;
     int numAttempts = 2;
     while (1)
     {
@@ -72,9 +72,11 @@ TCPSocket & TCPSocket::operator>>(std::string & data)
         if (retval > 0)
         {
             recive_size =
-                recv(this->socketFileDescriptor, buffer, bufferSize - 1, 0);
-            buffer[recive_size] = '\0';
-            data += buffer;
+                recv(this->socketFileDescriptor, buffer, 1, 0);
+			std::string str(buffer);
+            data += str;
+			if(str.compare("\n"))
+				break;
             numAttempts = 2;
         }
         else if (numAttempts > 0)
@@ -88,8 +90,45 @@ TCPSocket & TCPSocket::operator>>(std::string & data)
             break;
         }
     }
-    return *this;
+    return data;
 }
+
+std::string TCPSocket::read_from_socket(std::size_t size)
+{
+	std::string data;
+    fd_set rfds;
+    int retval;
+    ssize_t recive_size = 0;
+    char buffer[size+1];
+    int numAttempts = 2;
+    while (recive_size < size)
+    {
+        FD_ZERO(&rfds);
+        FD_SET(this->socketFileDescriptor, &rfds);
+        retval = select(this->socketFileDescriptor + 1, &rfds, nullptr, nullptr,
+                        &this->timeout);
+        if (retval > 0)
+        {
+            recive_size +=
+                recv(this->socketFileDescriptor, buffer, size -1, 0);
+			std::string str(buffer);
+            data += str;
+            numAttempts = 2;
+        }
+        else if (numAttempts > 0)
+        {
+            numAttempts--;
+        }
+        else
+        {
+            /*Timeout or error*/
+            std::cout << "Timeout\n";
+            break;
+        }
+    }
+	return data;
+}
+
 
 void TCPSocket::serveForever(int port)
 {

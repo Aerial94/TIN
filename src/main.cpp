@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include "DNSPooler.hpp"
 #include "Database.hpp"
+#include "HTTPServer.hpp"
 #include "Configuration.hpp"
 #include "Util.hpp"
 #include <signal.h>
@@ -32,8 +33,10 @@ int main(int argc, char *argv[]) {
     //Util::deamonize();
     Database::getInstance().addDomain("google.com");
     signal(SIGUSR1, sig_handler);
+	HTTPServer server;
     DNSPooler dnsPooler(Configuration::getInstance().getDnsPoolerInterval());
     dnsPooler.run();
+	server.listen();
     while (true) {
         pause();
     }

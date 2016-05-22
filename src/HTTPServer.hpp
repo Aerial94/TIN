@@ -25,8 +25,6 @@ private:
 	HTTPHandler handler;
 
 	void response(TCPSocket& socket);
-	bool is_request_valid(std::string& request);
-	std::string get_json(std::string& request);
 	std::string valid_request_function(std::string &response_json);
 	std::string invalid_request_function();
 };
