@@ -54,7 +54,7 @@ void HTTPHandler::chooseAction(std::string &json)
     std::string domainNames = getAllDomainNames();
     if(this->command == addAction)
     {
-        for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
+        for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
         {
             this->vecOfDomains.append(*it);
             this->pair["domain"] = *it;
@@ -66,7 +66,7 @@ void HTTPHandler::chooseAction(std::string &json)
     }
     else if(this->command == removeAction)
     {
-        for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
+        for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
         {
             this->vecOfDomains.append(*it);
             this->pair["domain"] = *it;
@@ -78,7 +78,7 @@ void HTTPHandler::chooseAction(std::string &json)
     }
     else if(this->command == queryAction)
     {
-        for(std::vector<std::string>::iterator it = this->domains.begin(); it != this->domains.end(); ++it)
+        for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
         {
             this->vecOfDomains.append(*it);
             this->pair["domain"] = *it;

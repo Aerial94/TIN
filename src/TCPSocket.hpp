@@ -26,10 +26,10 @@ public:
     int connect(SocketAddress & address);
     int bind(const SocketAddress & address);
     int listen(int backlog = 32);
-    TCPSocket accept();
+    int accept();
     TCPSocket & operator<<(const std::string & data);
     std::string readLine();
-	std::string read_from_socket(std::size_t size);
+	std::string read_from_socket(int size);
     void serveForever(int port);
     void bindAll(int port);
 };

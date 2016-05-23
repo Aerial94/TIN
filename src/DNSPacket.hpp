@@ -70,7 +70,7 @@ public:
     bool fromRaw(unsigned char *data, int len);
     int getSize();
 
-    int getIP();
+    unsigned int getIP();
 };
 
 class DNSPacket {

@@ -2,10 +2,18 @@
 
 UDPSocket::UDPSocket() {
     this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    setsockopt(this->socketFileDescriptor, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv));
 }
 
 UDPSocket::UDPSocket(const SocketAddress &socketAddress) {
     this->socketFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    setsockopt(this->socketFileDescriptor, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv));
     this->setAddress(socketAddress);
 }
 
@@ -45,10 +53,19 @@ UDPSocket &UDPSocket::operator>>(std::string &data) {
 
 UDPSocket &UDPSocket::recive(void *data, int size) {
     socklen_t aSize = this->internalAddress.getSize();
-    int recSize = recvfrom(this->socketFileDescriptor, data,
-                       size, 0,
-                       this->internalAddress.toInternalAddressStructPointer(),
-                       &aSize);
+    int recSize = 0;
+    while (recSize < size) {
+        int status = recvfrom(this->socketFileDescriptor, (char*)data+recSize,
+                            size, 0,
+                            this->internalAddress.toInternalAddressStructPointer(),
+                            &aSize);
+        if (status > 0)
+            return *this;
+        else if (status < 0){
+            TimeoutException e;
+            throw e;
+        }
+    }
     return *this;
 }
 

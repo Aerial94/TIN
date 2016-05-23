@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <mutex>
 
 class Logger {
 public:
@@ -15,9 +16,11 @@ public:
     void logInfo(std::string moduleName, std::string message);
     void logWarning(std::string moduleName, std::string message);
     void logDebug(std::string moduleName, std::string message);
+    void setLogLevel(LogLevel logLevel);
     void flush();
     void close();
 private:
+    std::mutex mutex;
     LogLevel logLevel;
     std::ofstream logFile;
     std::string getCurrentTimeDate();

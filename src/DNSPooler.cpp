@@ -3,6 +3,7 @@
 #include "Database.hpp"
 #include "DNSPacket.hpp"
 #include "UDPSocket.hpp"
+#include "Logger.hpp"
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
@@ -24,7 +25,9 @@ void DNSPooler::setInterval(int interval) {
 
 void DNSPooler::pool() {
     while (true) {
+        Logger::getInstance().logInfo("DNSPooler", "Starting pooling...");
         this->refreshDomains();
+        Logger::getInstance().logInfo("DNSPooler", "Pooling done");
         std::chrono::seconds sleepTime(this->interval);
         std::this_thread::sleep_for(sleepTime);
     }
@@ -35,10 +38,10 @@ void DNSPooler::refreshDomains() {
     std::string domain;
     while ((domain = Database::getInstance().getNextDomain())!= "")
     {
+        Logger::getInstance().logInfo("DNSPooler", "Refreshing domain: " + domain);
         bool mustGo = true;
         std::vector<std::string> dnsServers = this->rootServers;
         while (mustGo) {
-
             for (auto i = dnsServers.begin(); i != dnsServers.end(); ++i) {
                 UDPSocket udpSocket;
 
@@ -59,7 +62,14 @@ void DNSPooler::refreshDomains() {
                 free(data);
 
                 char *recive_data = (char *) malloc(MAX_UDP_PACKET_SIZE);
-                udpSocket.recive(recive_data, MAX_UDP_PACKET_SIZE);
+                try {
+                    udpSocket.recive(recive_data, MAX_UDP_PACKET_SIZE);
+                }
+                catch (TimeoutException &e)
+                {
+                    Logger::getInstance().logWarning("DNSPooler", "Timeout while refreshing domain: " + domain);
+                    continue;
+                }
 
                 DNSPacket recive;
                 recive.parseRawBuffer((unsigned char *) recive_data,
@@ -93,12 +103,3 @@ void DNSPooler::refreshDomains() {
         }
     }
 }
-
-
-
-
-
-
-
-
-

@@ -22,9 +22,8 @@ private:
 			"Content-Type: application/json\r\n"
 			"Connection: Closed\r\n";
 	TCPSocket socket;
-	HTTPHandler handler;
 
-	void response(TCPSocket& socket);
+	void response(int clientSocket);
 	std::string valid_request_function(std::string &response_json);
 	std::string invalid_request_function();
 };

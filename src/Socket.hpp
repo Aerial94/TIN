@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 
+class TimeoutException: public std::exception{};
 
 class Socket
 {

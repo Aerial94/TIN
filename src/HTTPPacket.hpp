@@ -12,7 +12,7 @@ public:
 	void save_line(std::string line);
 	void save_json(std::string json);
 	std::string get_json();
-	int get_content_length();
+	size_t get_content_length();
 private:
 	std::string json;
 	std::vector<std::pair<std::string, std::string>> headers;

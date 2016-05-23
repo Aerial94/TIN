@@ -201,7 +201,7 @@ int DNSAdditionalRecord::getSize() {
     return this->size;
 }
 
-int DNSAdditionalRecord::getIP() {
+in_addr_t DNSAdditionalRecord::getIP() {
     return this->address;
 }
 

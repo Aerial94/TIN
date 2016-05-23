@@ -30,13 +30,13 @@ int main(int argc, char *argv[]) {
         std::cout << "Exiting due to configuration errors\n";
         return -1;
     }
+    Logger::getInstance().setLogLevel(Configuration::getInstance().getLogLevel());
+    Logger::getInstance().logInfo("Main", "Application starting...");
     //Util::deamonize();
-    Database::getInstance().addDomain("asd.asd.asd.com");
-    Database::getInstance().addDomain("google.com");
     signal(SIGUSR1, sig_handler);
-	HTTPServer server;
     DNSPooler dnsPooler(Configuration::getInstance().getDnsPoolerInterval());
     dnsPooler.run();
+    HTTPServer server;
 	server.listen();
     while (true) {
         pause();

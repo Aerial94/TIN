@@ -29,6 +29,7 @@ Logger::~Logger() {
 
 void Logger::appendToLogFile(std::string level, std::string moduleName,
                              std::string message) {
+    std::lock_guard<std::mutex> guard(this->mutex);
     this->logFile << this->getCurrentTimeDate();
     this->logFile << " ";
     this->logFile << level;
@@ -37,6 +38,7 @@ void Logger::appendToLogFile(std::string level, std::string moduleName,
     this->logFile << " ";
     this->logFile << message;
     this->logFile << "\n";
+    this->logFile.flush();
 }
 
 std::string Logger::getCurrentTimeDate() {
@@ -62,10 +64,16 @@ void Logger::close() {
 
 Logger &Logger::getInstance() {
     static Logger logger;
-    return  logger;
+    return logger;
 }
 
 
 Logger::Logger() {
+    this->logFile.open("log.txt", std::ios_base::app);
     this->logLevel = LogLevel::NONE;
 }
+
+void Logger::setLogLevel(LogLevel logLevel) {
+    this->logLevel = logLevel;
+}
+

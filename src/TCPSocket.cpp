@@ -40,13 +40,9 @@ int TCPSocket::listen(int backlog)
     ::listen(this->socketFileDescriptor, backlog);
 }
 
-TCPSocket TCPSocket::accept()
+int TCPSocket::accept()
 {
-    int newSocket = ::accept(this->socketFileDescriptor, 0, 0);
-    TCPSocket client;
-    client = *this;
-    client.socketFileDescriptor = newSocket;
-    return client;
+    return ::accept(this->socketFileDescriptor, 0, 0);
 }
 
 TCPSocket & TCPSocket::operator<<(const std::string & data)
@@ -57,11 +53,11 @@ TCPSocket & TCPSocket::operator<<(const std::string & data)
 
 std::string TCPSocket::readLine()
 {
-	std::string data;
+	std::string data = "";
     fd_set rfds;
     int retval;
     ssize_t recive_size = 0;
-    char* buffer;
+    char buffer;
     int numAttempts = 2;
     while (1)
     {
@@ -72,11 +68,11 @@ std::string TCPSocket::readLine()
         if (retval > 0)
         {
             recive_size =
-                recv(this->socketFileDescriptor, buffer, 1, 0);
-			std::string str(buffer);
-            data += str;
-			if(str.compare("\n"))
+                recv(this->socketFileDescriptor, &buffer, 1, 0);
+            data += buffer;
+			if(buffer == '\n')
 				break;
+            buffer = '\0';
             numAttempts = 2;
         }
         else if (numAttempts > 0)
@@ -93,7 +89,7 @@ std::string TCPSocket::readLine()
     return data;
 }
 
-std::string TCPSocket::read_from_socket(std::size_t size)
+std::string TCPSocket::read_from_socket(int size)
 {
 	std::string data;
     fd_set rfds;
@@ -110,7 +106,8 @@ std::string TCPSocket::read_from_socket(std::size_t size)
         if (retval > 0)
         {
             recive_size +=
-                recv(this->socketFileDescriptor, buffer, size -1, 0);
+                recv(this->socketFileDescriptor, buffer, size, 0);
+            buffer[size] = '\0';
 			std::string str(buffer);
             data += str;
             numAttempts = 2;

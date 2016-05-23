@@ -11,6 +11,7 @@ HTTPServer::HTTPServer()
 	SocketAddress address;
 	address.setAddress(configuration.getHttpServerAddress());
 	address.setPort(configuration.getHttpServerPort());
+    this->socket.setReuseAddress();
 	this->socket.bind(address);
 	this->socket.listen(configuration.getHttpServerMaxThreads());
 }
@@ -19,26 +20,29 @@ void HTTPServer::listen()
 {
 	while (1) 
 	{
-		TCPSocket socket = this->socket.accept();
-		std::thread thread(&HTTPServer::response, this, std::ref(socket));
+		int clientSocket = this->socket.accept();
+		std::thread thread(&HTTPServer::response, this, clientSocket);
 		thread.detach();
 	}
 }
 
-void HTTPServer::response(TCPSocket& socket)
+void HTTPServer::response(int clientSocket)
 {
+	TCPSocket tcpSocket(clientSocket);
+	tcpSocket.setTimeout(Configuration::getInstance().getHttpServerReadTimeout(),0);
 	HTTPPacket packet;
 	std::string json_response, response;
 	std::string line, json;
-	line = socket.readLine();
-	while(!line.compare("\r\n")){
+	line = tcpSocket.readLine();
+	while(line != "\r\n"){
 		packet.save_line(line);
-		line = socket.readLine();
+		line = tcpSocket.readLine();
 	}
-	json = socket.read_from_socket(packet.get_content_length());
+	json = tcpSocket.read_from_socket(packet.get_content_length());
+    HTTPHandler handler;
 	json_response = handler.getResponse(json);
 	response = valid_request_function(json_response);
-	socket << response;
+	tcpSocket << response;
 }
 
 
