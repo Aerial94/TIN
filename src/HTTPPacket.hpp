@@ -13,10 +13,12 @@ public:
 	void save_json(std::string json);
 	std::string get_json();
 	size_t get_content_length();
+	bool is_valid_request();
 private:
 	std::string json;
 	std::vector<std::pair<std::string, std::string>> headers;
 	int contentLength;
+	bool valid_request;
 };
 
 

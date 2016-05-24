@@ -18,6 +18,7 @@ HTTPServer::HTTPServer()
 
 void HTTPServer::listen()
 {
+	Logger::getInstance().logInfo("Server", "Starting listening...");
 	while (1) 
 	{
 		int clientSocket = this->socket.accept();
@@ -28,6 +29,7 @@ void HTTPServer::listen()
 
 void HTTPServer::response(int clientSocket)
 {
+	Logger::getInstance().logInfo("Server", "Getting data...");
 	TCPSocket tcpSocket(clientSocket);
 	tcpSocket.setTimeout(Configuration::getInstance().getHttpServerReadTimeout(),0);
 	HTTPPacket packet;
@@ -38,10 +40,18 @@ void HTTPServer::response(int clientSocket)
 		packet.save_line(line);
 		line = tcpSocket.readLine();
 	}
-	json = tcpSocket.read_from_socket(packet.get_content_length());
-    HTTPHandler handler;
-	json_response = handler.getResponse(json);
-	response = valid_request_function(json_response);
+	if(packet.is_valid_request()){
+		Logger::getInstance().logInfo("Server", "Valid request");
+		json = tcpSocket.read_from_socket(packet.get_content_length());
+		packet.save_json(json);
+		HTTPHandler handler;
+		json_response = handler.getResponse(json);
+		response = valid_request_function(json_response);
+	}
+	else{
+		Logger::getInstance().logInfo("Server", "Invalid request");
+		response = invalid_request_function();
+	}
 	tcpSocket << response;
 }
 
