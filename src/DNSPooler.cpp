@@ -67,6 +67,7 @@ void DNSPooler::refreshDomains() {
                 }
                 catch (TimeoutException &e)
                 {
+                    free(recive_data);
                     Logger::getInstance().logWarning("DNSPooler", "Timeout while refreshing domain: " + domain);
                     if (dnsServers.end() - i == 1) {
                         mustGo = false;
@@ -77,6 +78,7 @@ void DNSPooler::refreshDomains() {
                 DNSPacket recive;
                 recive.parseRawBuffer((unsigned char *) recive_data,
                                       MAX_UDP_PACKET_SIZE);
+                free(recive_data);
                 if (recive.isOk()) {
                     if (recive.getAnswerCount() != 0) {
                         Database::getInstance().updateDomain(domain,

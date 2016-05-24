@@ -55,7 +55,7 @@ void DNSPacket::addQuestion(DNSQuestion dnsQuestion) {
 }
 
 char *DNSPacket::getRaw(int *size) {
-    *size = 6 * sizeof(short);
+    *size = 12;
     for (auto i = this->questions.begin(); i != this->questions.end(); i++) {
         *size += i->getSize();
     }
@@ -83,6 +83,7 @@ char *DNSPacket::getRaw(int *size) {
         char * raw = i->getRaw();
         memcpy(&header[j],raw, i->getSize());
         j += i->getSize();
+        free(raw);
     }
     return header;
 }
