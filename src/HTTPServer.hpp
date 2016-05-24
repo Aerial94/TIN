@@ -14,8 +14,8 @@ public:
 private:
 	const std::string invalid_request = "HTTP/1.1 418 I'm teapot\r\n"
 					"Content-Length: 0\r\n"
-					"Content-Type: text/html;\r\n"
-					"Connection: Closed\r\n";
+					"Connection: Closed\r\n"
+					"\r\n";
 
 	const std::string valid_request = "HTTP/1.1 200 OK\r\n"
 			"Content-Length: {0}\r\n"
