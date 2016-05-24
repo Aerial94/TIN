@@ -68,6 +68,9 @@ void DNSPooler::refreshDomains() {
                 catch (TimeoutException &e)
                 {
                     Logger::getInstance().logWarning("DNSPooler", "Timeout while refreshing domain: " + domain);
+                    if (dnsServers.end() - i == 1) {
+                        mustGo = false;
+                    }
                     continue;
                 }
 
