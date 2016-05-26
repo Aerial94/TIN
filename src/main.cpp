@@ -12,7 +12,6 @@
 #include <fstream>
 #include <stdlib.h>
 #include <unistd.h>
-#include <libltdl/lt_system.h>
 
 
 void sig_handler(int signo) {

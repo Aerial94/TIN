@@ -1,4 +1,6 @@
 #include "Database.hpp"
+#include "Logger.hpp"
+
 
 std::vector<Domain>::iterator Database::findDomain(std::string dName)
 {
@@ -9,6 +11,7 @@ std::vector<Domain>::iterator Database::findDomain(std::string dName)
 
 HTTPHandler::MessageStatus Database::getDomainStatus(std::string dName)
 {
+	Logger::getInstance().logInfo("Database", "Query domain: " +dName);
     std::lock_guard<std::mutex> guard(mutex);
     if(unsafeFindDomain(dName) != domains.end() && !domains.empty())
     {
@@ -28,6 +31,7 @@ HTTPHandler::MessageStatus Database::getDomainStatus(std::string dName)
 
 HTTPHandler::MessageStatus Database::addDomain(std::string dName)
 {
+	Logger::getInstance().logInfo("Database", "Saving domain: " +dName);
     std::lock_guard<std::mutex> guard(mutex);
     //check if it does't already exist in database
     if(unsafeFindDomain(dName) != domains.end() && !domains.empty())
@@ -40,6 +44,7 @@ HTTPHandler::MessageStatus Database::addDomain(std::string dName)
 
 HTTPHandler::MessageStatus Database::removeDomain(std::string dName)
 {
+	Logger::getInstance().logInfo("Database", "Remove domain: " +dName);
     std::lock_guard<std::mutex> guard(mutex);
     if(unsafeFindDomain(dName) != domains.end())
     {
