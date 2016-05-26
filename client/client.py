@@ -29,8 +29,15 @@ def query_domains(domains_table):
     r = requests.post("http://localhost:8080", json=payload)
     return r.json()
 
+def query_test(domains_table):
+    payload = {}
+    payload["com"] = "ry"
+    payload["mains"] = domains_table
+    r = requests.post("http://localhost:8080", json=payload)
+    return r
+
 parser = argparse.ArgumentParser()
-parser.add_argument("command", choices=("add", "remove", "query"))
+parser.add_argument("command", choices=("add", "remove", "query", "test"))
 parser.add_argument('domain', nargs='+')
 args = parser.parse_args()
 domains_table = [x for x in args.domain]
@@ -40,3 +47,5 @@ elif args.command == "remove":
     print(remove_domains(domains_table))
 elif args.command == "query":
     print(query_domains(domains_table))
+elif args.command == "test":
+    print(query_test(domains_table))
