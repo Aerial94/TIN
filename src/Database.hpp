@@ -32,6 +32,7 @@ public:
     HTTPHandler::MessageStatus addDomain(std::string dName);
     HTTPHandler::MessageStatus removeDomain(std::string dName);
     HTTPHandler::MessageStatus updateDomain(std::string dName, Domain::DomainStatus status);
+    std::vector<std::string> copy();
     std::string getNextDomain();
 
     std::vector<Domain>::iterator unsafeFindDomain(std::string domainName);

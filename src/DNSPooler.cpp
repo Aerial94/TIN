@@ -34,11 +34,10 @@ void DNSPooler::pool() {
 }
 
 void DNSPooler::refreshDomains() {
-
-    std::string domain;
-    while ((domain = Database::getInstance().getNextDomain()) != "") {
+    std::vector<std::string> domainsNames = Database::getInstance().copy();
+    for (auto d = domainsNames.begin(); d != domainsNames.end(); ++d) {
         Logger::getInstance().logInfo("DNSPooler",
-                                      "Refreshing domain: " + domain);
+                                      "Refreshing domain: " + *d);
         bool mustGo = true;
         std::vector<std::string> dnsServers = this->rootServers;
         while (mustGo) {
@@ -47,7 +46,7 @@ void DNSPooler::refreshDomains() {
 
                 DNSPacket dnsPacket;
                 dnsPacket.markAsQuestion();
-                DNSQuestion dnsQuestion(domain);
+                DNSQuestion dnsQuestion(*d);
                 dnsPacket.addQuestion(dnsQuestion);
 
                 SocketAddress address;
@@ -64,7 +63,7 @@ void DNSPooler::refreshDomains() {
                 catch (TimeoutException &e) {
                     Logger::getInstance().logWarning("DNSPooler",
                                                      "Timeout while refreshing domain: " +
-                                                     domain +
+                                                     *d+
                                                      " using DNS Server: " +
                                                      dnsServer);
                     if (dnsServers.end() - i == 1) {
@@ -74,7 +73,7 @@ void DNSPooler::refreshDomains() {
                 }
                 if (recive.isOk()) {
                     if (recive.getAnswerCount() != 0) {
-                        Database::getInstance().updateDomain(domain,
+                        Database::getInstance().updateDomain(*d,
                                                              Domain::FOLLOWED);
                         mustGo = false;
                         break;
@@ -92,7 +91,7 @@ void DNSPooler::refreshDomains() {
                     }
                 }
                 else {
-                    Database::getInstance().updateDomain(domain,
+                    Database::getInstance().updateDomain(*d,
                                                          Domain::NONEXISTENT);
                     mustGo = false;
                     break;

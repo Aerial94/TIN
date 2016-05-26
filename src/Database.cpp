@@ -93,5 +93,16 @@ void Database::clear() {
     this->domains.clear();
 }
 
+std::vector<std::string> Database::copy() {
+    std::lock_guard<std::mutex> guard(mutex);
+    std::vector<std::string> d;
+    for (Domain &dom : this->domains){
+        d.push_back(dom.getDomainName());
+    }
+    return d;
+}
+
+
+
 
 
