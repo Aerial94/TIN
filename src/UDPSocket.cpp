@@ -74,17 +74,17 @@ UDPSocket &UDPSocket::operator<<(const DNSPacket &packet) {
     int size;
     char * data = packet.getRaw(&size);
     this->send(data, size);
-    delete data;
+    delete [] data;
     return *this;
 }
 
 UDPSocket &UDPSocket::operator>>(DNSPacket &packet) {
     struct timeval tv;
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    tv.tv_usec = 250000;
     setsockopt(this->socketFileDescriptor, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv));
-    unsigned char * data = (unsigned char *) this->read(512);
-    packet.parseRawBuffer(data, 512);
+    unsigned char * data = (unsigned char *) this->read(MAX_UDP_PACKET_SIZE);
+    packet.parseRawBuffer(data, MAX_UDP_PACKET_SIZE);
     return *this;
 }
 
@@ -214,4 +214,3 @@ UDPSocket &UDPSocket::operator>>(DNSAdditionalRecord &additionalRecord) {
     }
     return *this;
 }
-
