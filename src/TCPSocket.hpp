@@ -16,7 +16,7 @@ private:
     bool isConnected;
 
 public:
-    enum Exception {
+    enum TCPException {
         CONNECTION_FAILED,
         BIND_FAILED,
     };

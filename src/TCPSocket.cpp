@@ -6,7 +6,7 @@
 TCPSocket::TCPSocket()
 {
     this->isConnected = 0;
-    this->socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    this->socketFileDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
 TCPSocket::TCPSocket(int socketFileDescriptor)
