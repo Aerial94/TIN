@@ -1,18 +1,11 @@
 #include "TCPSocket.hpp"
-#include "SocketAddress.hpp"
-#include <iostream>
 #include "Logger.hpp"
 #include "DNSPooler.hpp"
 #include "Database.hpp"
 #include "HTTPServer.hpp"
-#include "Configuration.hpp"
 #include "Util.hpp"
 #include <signal.h>
-#include <iostream>
-#include <fstream>
 #include <stdlib.h>
-#include <unistd.h>
-
 
 void sig_handler(int signo) {
     switch (signo) {
