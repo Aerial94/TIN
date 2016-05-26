@@ -36,8 +36,14 @@ void HTTPHandler::parse(std::string json)
     if(!root["domains"].empty())
     {
         Json::Value jsonDomains = root["domains"];
-        for(int i = 0; i < jsonDomains.size(); ++i)
-            this->domains.push_back(jsonDomains[i].asString());
+        if (jsonDomains.isArray()) {
+            for(int i = 0; i < jsonDomains.size(); ++i)
+                this->domains.push_back(jsonDomains[i].asString());
+        }
+        else if (jsonDomains.asString() == "*")
+        {
+            this->star = true;
+        }
     }
     else
     {
@@ -51,7 +57,6 @@ void HTTPHandler::parse(std::string json)
 void HTTPHandler::chooseAction(std::string &json)
 {
     parse(json);
-    std::string domainNames = getAllDomainNames();
     if(this->command == addAction)
     {
         for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
@@ -62,7 +67,7 @@ void HTTPHandler::chooseAction(std::string &json)
             this->pair["status"] = statusToString(status);
             this->vecOfDomainStatusPairs.append(this->pair);
         }
-        Logger::getInstance().logInfo("HTTPHandler", "The following domains were added: " + domainNames);
+        Logger::getInstance().logInfo("HTTPHandler", "The following domains were added: " + getAllDomainNames());
     }
     else if(this->command == removeAction)
     {
@@ -73,19 +78,32 @@ void HTTPHandler::chooseAction(std::string &json)
             HTTPHandler::MessageStatus status = Database::getInstance().removeDomain(*it);
             this->pair["status"] = statusToString(status);
             this->vecOfDomainStatusPairs.append(this->pair);
-            Logger::getInstance().logInfo("HTTPHandler", "The following domains were removed: " + domainNames);
+            Logger::getInstance().logInfo("HTTPHandler", "The following domains were removed: " + getAllDomainNames());
         }
     }
     else if(this->command == queryAction)
     {
-        for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
-        {
-            this->vecOfDomains.append(*it);
-            this->pair["domain"] = *it;
-            HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
-            this->pair["status"] = statusToString(status);
-            this->vecOfDomainStatusPairs.append(this->pair);
-            Logger::getInstance().logInfo("HTTPHandler", "The following domains were queued: " + domainNames);
+        if (this->star) {
+            std::vector<std::string> copyDomains = Database::getInstance().copy();
+            for (auto it = copyDomains.begin(); it != copyDomains.end(); ++it){
+                this->vecOfDomains.append(*it);
+                this->pair["domain"] = *it;
+                HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
+                this->pair["status"] = statusToString(status);
+                this->vecOfDomainStatusPairs.append(this->pair);
+                Logger::getInstance().logInfo("HTTPHandler", "All domains were queued");
+            }
+        }
+        else {
+            for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
+            {
+                this->vecOfDomains.append(*it);
+                this->pair["domain"] = *it;
+                HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
+                this->pair["status"] = statusToString(status);
+                this->vecOfDomainStatusPairs.append(this->pair);
+                Logger::getInstance().logInfo("HTTPHandler", "The following domains were queued: " + getAllDomainNames());
+            }
         }
     }
     prepareResponse();

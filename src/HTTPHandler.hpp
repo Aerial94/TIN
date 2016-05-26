@@ -40,6 +40,8 @@ private:
 class HTTPHandler
 {
 public:
+    HTTPHandler ()
+    {this->star = false;}
     enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
 
     Json::Value testAction(std::string &json);
@@ -63,6 +65,7 @@ private:
     void prepareResponse();
     std::string getAllDomainNames();
 
+    bool star;
 };
 
 

@@ -13,39 +13,49 @@ def add_domains(domains_table):
     payload["command"] = "add"
     payload["domains"] = domains_table
     r = requests.post("http://localhost:8080", json=payload)
-    return r.json()
+    for re in r.json()['result']:
+        print (re['domain'] + " => " + re['status'])
 
 def remove_domains(domains_table):
     payload = {}
     payload["command"] = "remove"
     payload["domains"] = domains_table
     r = requests.post("http://localhost:8080", json=payload)
-    return r.json()
+    for re in r.json()['result']:
+        print (re['domain'] + " => " + re['status'])
 
 def query_domains(domains_table):
     payload = {}
     payload["command"] = "query"
-    payload["domains"] = domains_table
+    if domains_table:
+        payload["domains"] = domains_table
+    else:
+        payload["domains"] = "*"
     r = requests.post("http://localhost:8080", json=payload)
-    return r.json()
+    if r.json()['result']:
+        for re in r.json()['result']:
+            print (re['domain'] + " => " + re['status'])
 
 def query_test(domains_table):
     payload = {}
     payload["com"] = "ry"
     payload["mains"] = domains_table
     r = requests.post("http://localhost:8080", json=payload)
-    return r
+    for re in r.json()['result']:
+        print (re['domain'] + " => " + re['status'])
 
 parser = argparse.ArgumentParser()
 parser.add_argument("command", choices=("add", "remove", "query", "test"))
-parser.add_argument('domain', nargs='+')
+parser.add_argument('domain', nargs='*')
 args = parser.parse_args()
 domains_table = [x for x in args.domain]
-if args.command == "add":
-    print(add_domains(domains_table))
-elif args.command == "remove":
-    print(remove_domains(domains_table))
+if args.command == "add" and domains_table:
+    add_domains(domains_table)
+elif args.command == "remove" and domains_table:
+    remove_domains(domains_table)
 elif args.command == "query":
-    print(query_domains(domains_table))
+    query_domains(domains_table)
 elif args.command == "test":
-    print(query_test(domains_table))
+    query_test(domains_table)
+else:
+    parser.print_help()
