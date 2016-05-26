@@ -24,11 +24,13 @@ HTTPServer::HTTPServer() {
         std::exit(-1);
     }
     this->socket.listen(configuration.getHttpServerMaxThreads());
+    this->semaphore.setCount(configuration.getHttpServerMaxThreads());
 }
 
 void HTTPServer::listen() {
     Logger::getInstance().logInfo("Server", "Starting listening...");
     while (1) {
+        this->semaphore.wait();
         int clientSocket = this->socket.accept();
         std::thread thread(&HTTPServer::response, this, clientSocket);
         thread.detach();
@@ -50,6 +52,7 @@ void HTTPServer::response(int clientSocket) {
         catch (TimeoutException &e) {
             Logger::getInstance().logWarning("Server",
                                              "Timeout while reciving http packet headers from client");
+            this->semaphore.notify();
             return;
         }
         if (line == "\r\n")
@@ -63,7 +66,8 @@ void HTTPServer::response(int clientSocket) {
         }
         catch (TimeoutException &e) {
             Logger::getInstance().logWarning("Server",
-                                             "Timeout while reciving http packet body from client");
+                                             "Timeout while reciving http packet json body from client");
+            this->semaphore.notify();
             return;
         }
         packet.save_json(json);
@@ -83,6 +87,7 @@ void HTTPServer::response(int clientSocket) {
         response = invalid_request_function();
     }
     tcpSocket << response;
+    this->semaphore.notify();
 }
 
 
@@ -100,3 +105,5 @@ std::string HTTPServer::invalid_request_function() {
     return response;
 
 }
+
+
