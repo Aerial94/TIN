@@ -82,8 +82,8 @@ std::string TCPSocket::readLine()
         else
         {
             /*Timeout or error*/
-            std::cout << "Timeout\n";
-            break;
+            TimeoutException e;
+            throw e;
         }
     }
     return data;
@@ -119,8 +119,8 @@ std::string TCPSocket::read_from_socket(int size)
         else
         {
             /*Timeout or error*/
-            std::cout << "Timeout\n";
-            break;
+            TimeoutException e;
+            throw e;
         }
     }
 	return data;

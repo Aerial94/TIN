@@ -35,14 +35,27 @@ void HTTPServer::response(int clientSocket)
 	HTTPPacket packet;
 	std::string json_response, response;
 	std::string line, json;
-	line = tcpSocket.readLine();
-	while(line != "\r\n"){
+	while(true){
+		try {
+			line = tcpSocket.readLine();
+		}
+		catch (TimeoutException &e){
+			Logger::getInstance().logWarning("Server", "Timeout while reciving http packet headers from client");
+			return;
+		}
+		if (line == "\r\n")
+			break;
 		packet.save_line(line);
-		line = tcpSocket.readLine();
 	}
 	if(packet.is_valid_request()){
 		Logger::getInstance().logDebug("Server", "Valid request");
-		json = tcpSocket.read_from_socket(packet.get_content_length());
+		try {
+			json = tcpSocket.read_from_socket(packet.get_content_length());
+		}
+		catch (TimeoutException &e){
+			Logger::getInstance().logWarning("Server", "Timeout while reciving http packet body from client");
+			return;
+		}
 		packet.save_json(json);
 		HTTPHandler handler;
 		try {
