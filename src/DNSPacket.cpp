@@ -2,8 +2,9 @@
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
+#include <stdlib.h>
 
-short DNSPacket::generateIdentifier() {
+short DNSPacket::generateIdentifier()const {
     std::srand(std::time(0));
     return std::rand() & 0xFFFF;
 }
@@ -54,30 +55,23 @@ void DNSPacket::addQuestion(DNSQuestion dnsQuestion) {
     this->questions.push_back(dnsQuestion);
 }
 
-char *DNSPacket::getRaw(int *size) {
+char * DNSPacket::getRaw(int *size)const {
     *size = 12;
     for (auto i = this->questions.begin(); i != this->questions.end(); i++) {
         *size += i->getSize();
     }
-    char * header = (char *) malloc(*size);
+    char * header = new char[*size];
+    std::memset(header, 0, *size);
     short id = this->generateIdentifier();
     header[0] = id >> 8 & 0xFF;
     header[1] = id & 0xFF;
 
-    header[2] &= 0;
     header[2] |= (this->response) << 0;
     header[2] |= (this->recursionDesired) << 7;
 
-    header[3] &= 0;
     header[4] = (this->questionCount >> 8) & 0xFF;
     header[5] = this->questionCount & 0xFF;
 
-    header[6] = 0;
-    header[7] = 0;
-    header[8] = 0;
-    header[9] = 0;
-    header[10] = 0;
-    header[11] = 0;
     int j = 12;
     for (auto i = this->questions.begin(); i != this->questions.end(); i++) {
         char * raw = i->getRaw();
@@ -97,7 +91,7 @@ void DNSPacket::markAsQuestion() {
 }
 
 
-char *DNSQuestion::getRaw() {
+char *DNSQuestion::getRaw() const{
     char *rawData = (char *) std::malloc(1 + this->qname.length() + 1 + 4);
     int i = 0;
     std::string domain = this->qname;
@@ -145,7 +139,7 @@ int DNSQuestion::setRaw(char *raw) {
     return i+1+4;
 }
 
-int DNSQuestion::getSize() {
+int DNSQuestion::getSize() const{
     return 1 + this->qname.length() + 1 + 4;
 }
 

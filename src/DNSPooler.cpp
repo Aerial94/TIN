@@ -36,9 +36,9 @@ void DNSPooler::pool() {
 void DNSPooler::refreshDomains() {
 
     std::string domain;
-    while ((domain = Database::getInstance().getNextDomain())!= "")
-    {
-        Logger::getInstance().logInfo("DNSPooler", "Refreshing domain: " + domain);
+    while ((domain = Database::getInstance().getNextDomain()) != "") {
+        Logger::getInstance().logInfo("DNSPooler",
+                                      "Refreshing domain: " + domain);
         bool mustGo = true;
         std::vector<std::string> dnsServers = this->rootServers;
         while (mustGo) {
@@ -55,30 +55,23 @@ void DNSPooler::refreshDomains() {
                 int status = address.setAddress(dnsServer);
                 address.setPort(53); // DNS port 53
                 udpSocket.setAddress(address);
+                udpSocket << dnsPacket;
 
-                int size;
-                char *data = dnsPacket.getRaw(&size);
-                udpSocket.send(data, size);
-                free(data);
-
-                char *recive_data = (char *) malloc(MAX_UDP_PACKET_SIZE);
+                DNSPacket recive;
                 try {
-                    udpSocket.recive(recive_data, MAX_UDP_PACKET_SIZE);
+                    udpSocket >> recive;
                 }
-                catch (TimeoutException &e)
-                {
-                    free(recive_data);
-                    Logger::getInstance().logWarning("DNSPooler", "Timeout while refreshing domain: " + domain);
+                catch (TimeoutException &e) {
+                    Logger::getInstance().logWarning("DNSPooler",
+                                                     "Timeout while refreshing domain: " +
+                                                     domain +
+                                                     " using DNS Server: " +
+                                                     dnsServer);
                     if (dnsServers.end() - i == 1) {
                         mustGo = false;
                     }
                     continue;
                 }
-
-                DNSPacket recive;
-                recive.parseRawBuffer((unsigned char *) recive_data,
-                                      MAX_UDP_PACKET_SIZE);
-                free(recive_data);
                 if (recive.isOk()) {
                     if (recive.getAnswerCount() != 0) {
                         Database::getInstance().updateDomain(domain,

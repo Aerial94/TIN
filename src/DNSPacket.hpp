@@ -5,6 +5,7 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include "UDPSocket.hpp"
 
 class FQDN {
     std::string name;
@@ -22,12 +23,14 @@ public:
 
 };
 
+class UDPSocket;
 class DNSQuestion {
 private:
     std::string qname;
     short qtype;
     short qclass;
 public:
+    friend UDPSocket &UDPSocket::operator>>(DNSQuestion &dnsQuestion);
     DNSQuestion() {}
     DNSQuestion(const std::string &qname);
     char * toPacketFormat(std::string domainName);
@@ -36,9 +39,9 @@ public:
         return qname;
     }
 
-    char *getRaw();
+    char *getRaw() const;
     int setRaw(char *raw);
-    int getSize();
+    int getSize() const;
 };
 
 class DNSAnswer {
@@ -53,6 +56,8 @@ class DNSAuthoritativeNameServer {
     std::string nameServer;
     int size;
 public:
+    friend UDPSocket &UDPSocket::operator>>(
+        DNSAuthoritativeNameServer &authoritativeNameServer);
     bool fromRaw(unsigned char *data, int len);
 
     int getSize();
@@ -67,6 +72,10 @@ class DNSAdditionalRecord {
     int address;
     int size;
 public:
+    friend UDPSocket &UDPSocket::operator>>(DNSAdditionalRecord &additionalRecord);
+    DNSAdditionalRecord(){
+        this->address = 0;
+    }
     bool fromRaw(unsigned char *data, int len);
     int getSize();
 
@@ -88,12 +97,13 @@ private:
     short authorityRecordCount;
     short additionalRecordCount;
 
-    short generateIdentifier();
+    short generateIdentifier()const;
     int parsePointer;
     std::vector<DNSQuestion> questions;
     std::vector<DNSAnswer> answers;
     std::vector<DNSAdditionalRecord> additional;
 public:
+    friend UDPSocket &UDPSocket::operator>>(DNSPacket &packet);
     DNSPacket();
     short getIdentifier() const {
         return identifier;
@@ -131,7 +141,7 @@ public:
         return this->additionalRecordCount;
     }
     void addQuestion(DNSQuestion dnsQuestion);
-    char *getRaw(int *size);
+    char * getRaw(int *size)const;
     void markAsResponse();
     void markAsQuestion();
     bool isOk();
