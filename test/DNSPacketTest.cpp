@@ -167,7 +167,7 @@ SCENARIO("DNSAuthorityServer from raw conversion") {
         };
         WHEN("DNSAuthorityServer converts it") {
             DNSAuthoritativeNameServer authoritativeNameServer;
-            authoritativeNameServer.fromRaw(data, 0);
+            authoritativeNameServer.fromRaw(data, 0, nullptr);
             THEN("conversion is correct") {
                 int size = authoritativeNameServer.getSize();
                 REQUIRE(size == sizeof data);
@@ -195,7 +195,7 @@ SCENARIO("DNSAuthorityServer from raw conversion") {
         };
         WHEN("DNSAuthorityServer converts it") {
             DNSAuthoritativeNameServer authoritativeNameServer;
-            authoritativeNameServer.fromRaw(data, 0);
+            authoritativeNameServer.fromRaw(data, 0, nullptr);
             THEN("conversion is correct") {
                 int size = authoritativeNameServer.getSize();
                 REQUIRE(size == sizeof data);

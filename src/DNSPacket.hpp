@@ -5,7 +5,9 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include <netdb.h>
 #include "UDPSocket.hpp"
+
 
 class FQDN {
     std::string name;
@@ -46,6 +48,13 @@ public:
 
 class DNSAnswer {
 
+public:
+    bool setRaw(char *data);
+
+    int size;
+    int address;
+
+    int getSize();
 };
 
 class DNSAuthoritativeNameServer {
@@ -58,9 +67,13 @@ class DNSAuthoritativeNameServer {
 public:
     friend UDPSocket &UDPSocket::operator>>(
         DNSAuthoritativeNameServer &authoritativeNameServer);
-    bool fromRaw(unsigned char *data, int len);
+    bool fromRaw(unsigned char *data, int len,
+                     unsigned char *allData);
 
     int getSize();
+    std::string getQName();
+
+    std::string qname;
 };
 
 class DNSAdditionalRecord {
@@ -101,6 +114,7 @@ private:
     int parsePointer;
     std::vector<DNSQuestion> questions;
     std::vector<DNSAnswer> answers;
+    std::vector<DNSAuthoritativeNameServer> authority;
     std::vector<DNSAdditionalRecord> additional;
 public:
     friend UDPSocket &UDPSocket::operator>>(DNSPacket &packet);
@@ -147,8 +161,10 @@ public:
     bool isOk();
     std::vector<DNSAdditionalRecord>& getAdditional();
 
+    std::vector<DNSAuthoritativeNameServer> getAuthorityNameServers();
 };
 
+std::string hostnameToIP(std::string hostname);
 
 
 #endif //DNS_CHECKER_DNSPACKET_HPP

@@ -9,9 +9,19 @@
 
 DNSPooler::DNSPooler(int interval) {
     this->interval = interval;
-    this->rootServers.push_back("192.33.4.12");
-    this->rootServers.push_back("192.228.79.201");
     this->rootServers.push_back("198.41.0.4");
+    this->rootServers.push_back("192.228.79.201");
+    this->rootServers.push_back("192.33.4.12");
+    this->rootServers.push_back("199.7.91.13");
+    this->rootServers.push_back("192.203.230.10");
+    this->rootServers.push_back("192.5.5.241");
+    this->rootServers.push_back("192.112.36.4");
+    this->rootServers.push_back("198.97.190.53");
+    this->rootServers.push_back("192.36.148.17");
+    this->rootServers.push_back("192.58.128.30");
+    this->rootServers.push_back("193.0.14.129");
+    this->rootServers.push_back("199.7.83.42");
+    this->rootServers.push_back("202.12.27.33");
 }
 
 void DNSPooler::run() {
@@ -51,7 +61,7 @@ void DNSPooler::refreshDomains() {
 
                 SocketAddress address;
                 std::string dnsServer = *i;
-                int status = address.setAddress(dnsServer);
+                address.setAddress(dnsServer);
                 address.setPort(53); // DNS port 53
                 udpSocket.setAddress(address);
                 udpSocket << dnsPacket;
@@ -63,7 +73,7 @@ void DNSPooler::refreshDomains() {
                 catch (TimeoutException &e) {
                     Logger::getInstance().logWarning("DNSPooler",
                                                      "Timeout while refreshing domain: " +
-                                                     *d+
+                                                     *d +
                                                      " using DNS Server: " +
                                                      dnsServer);
                     if (dnsServers.end() - i == 1) {
@@ -78,7 +88,7 @@ void DNSPooler::refreshDomains() {
                         mustGo = false;
                         break;
                     }
-                    if (recive.getAdditionalCount()) {
+                    else if (recive.getAdditionalCount()) {
                         dnsServers.clear();
                         std::vector<DNSAdditionalRecord> add = recive.getAdditional();
                         for (auto j = add.begin(); j != add.end(); j++) {
@@ -89,14 +99,36 @@ void DNSPooler::refreshDomains() {
                         }
                         break;
                     }
-                }
-                else {
-                    Database::getInstance().updateDomain(*d,
-                                                         Domain::NONEXISTENT);
-                    mustGo = false;
-                    break;
-                }
+                    else if (recive.getAuthorityCount()){
+                        dnsServers.clear();
+                        std::vector<DNSAuthoritativeNameServer> add = recive.getAuthorityNameServers();
+                        for (auto j = add.begin(); j != add.end(); j++) {
+                            try {
+                                std::string ip = hostnameToIP(j->getQName());
+                                dnsServers.push_back(ip);
+                            }
+                            catch (TimeoutException &exception) {
+                                continue;
+                            }
+                        }
+                        if (dnsServer.empty())
+                        {
+                            Database::getInstance().updateDomain(*d,
+                                                                 Domain::NONEXISTENT);
+                            mustGo = false;
+                            break;
+                        }
+                        break;
+                    }
+            }
+            else {
+                Database::getInstance().updateDomain(*d,
+                                                     Domain::NONEXISTENT);
+                mustGo = false;
+                break;
             }
         }
     }
+}
+
 }
