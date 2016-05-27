@@ -22,7 +22,7 @@ void HTTPPacket::save_line(std::string line)
 	if(line.find("HTTP/") != std::string::npos){
 		if(line.find("POST") != std::string::npos){
 			this->valid_request = true;
-			Logger::getInstance().logInfo("HTTPPacket", "Request is valid");
+			Logger::getInstance().logDebug("HTTPPacket", "Request is valid");
 			return;
 		}
 	}
@@ -32,7 +32,7 @@ void HTTPPacket::save_line(std::string line)
 	headers.push_back(std::make_pair(key, value));
 	if(key == "Content-Length"){
 		this->contentLength = std::atoi(value.c_str());
-		Logger::getInstance().logInfo("HTTPPacket", "Content-Length is " + this->contentLength);
+		Logger::getInstance().logDebug("HTTPPacket", "Content-Length is " + value);
 	}
 	
 }
