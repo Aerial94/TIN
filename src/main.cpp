@@ -6,15 +6,14 @@
 #include "Util.hpp"
 #include <signal.h>
 #include <stdlib.h>
+#include <atomic>
 
-void sig_handler(int signo) {
-    switch (signo) {
+std::atomic_bool stopThreads;
+static void hdl (int sig, siginfo_t *siginfo, void *context) {
+    switch (sig) {
         case SIGINT:
         case SIGTERM:
-            Logger::getInstance().logInfo("Exit", "Stopping dns-checker...");
-            Logger::getInstance().logInfo("Exit", "Closing log file...");
-            Logger::getInstance().close();
-            exit(0);
+            stopThreads = true;
     }
 }
 
@@ -50,14 +49,33 @@ int main(int argc, char *argv[]) {
     if (background) {
         Util::deamonize();
     }
-    signal(SIGINT, sig_handler);
-    signal(SIGTERM, sig_handler);
-    signal(SIGUSR1, sig_handler);
+
+    sigset_t signal_set;
+    sigemptyset(&signal_set);
+    sigaddset(&signal_set, SIGINT);
+    sigaddset(&signal_set, SIGTERM);
+    struct sigaction act;
+    memset(&act, '\0', sizeof(act));
+    act.sa_sigaction = &hdl;
+    act.sa_flags = SA_SIGINFO;
+    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGTERM, &act, NULL);
     DNSPooler dnsPooler(Configuration::getInstance().getDnsPoolerInterval());
     dnsPooler.run();
     HTTPServer server;
-    server.listen();
+    server.run();
+    stopThreads = false;
     while (true) {
+        if (stopThreads) {
+            sigprocmask (SIG_BLOCK, &signal_set, NULL);
+            Logger::getInstance().logInfo("Main", "Stopping dns-checker...");
+            dnsPooler.stop();
+            server.stop();
+            Logger::getInstance().logInfo("Main", "Done stopping dns-checker");
+            Logger::getInstance().stop();
+            sigprocmask (SIG_UNBLOCK, &signal_set, NULL);
+            break;
+        }
         pause();
     }
 }

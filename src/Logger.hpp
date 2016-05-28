@@ -17,9 +17,11 @@ public:
     void logWarning(std::string moduleName, std::string message);
     void logDebug(std::string moduleName, std::string message);
     void setLogLevel(LogLevel logLevel);
+    void stop();
     void flush();
     void close();
 private:
+    bool disabled;
     std::mutex mutex;
     LogLevel logLevel;
     std::ofstream logFile;

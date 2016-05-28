@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <vector>
+#include <atomic>
 
 class DNSPooler {
     int interval;
@@ -14,6 +15,10 @@ public:
     void run();
     void setInterval(int interval);
 
+    void stop();
+
+    std::thread thread;
+    std::atomic_bool stopThread;
 };
 
 

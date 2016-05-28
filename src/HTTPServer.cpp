@@ -18,8 +18,8 @@ HTTPServer::HTTPServer() {
                                                 ":" + std::to_string(
                 configuration.getHttpServerPort()));
         std::cout << "Cant bind address " +
-                             configuration.getHttpServerAddress() +
-                             ":" + std::to_string(
+                     configuration.getHttpServerAddress() +
+                     ":" + std::to_string(
                 configuration.getHttpServerPort()) + "\n";
         std::exit(-1);
     }
@@ -28,12 +28,18 @@ HTTPServer::HTTPServer() {
 }
 
 void HTTPServer::listen() {
+    this->socket.setTimeout(1, 0);
     Logger::getInstance().logInfo("Server", "Starting listening...");
-    while (1) {
-        this->semaphore.wait();
-        int clientSocket = this->socket.accept();
-        std::thread thread(&HTTPServer::response, this, clientSocket);
-        thread.detach();
+    while (not this->stopThread) {
+        try {
+            int clientSocket = this->socket.accept();
+            this->semaphore.wait();
+            std::thread thread(&HTTPServer::response, this, clientSocket);
+            thread.detach();
+        }
+        catch (TimeoutException &e) {
+            continue;
+        }
     }
 }
 
@@ -106,4 +112,13 @@ std::string HTTPServer::invalid_request_function() {
 
 }
 
+void HTTPServer::stop() {
+    Logger::getInstance().logInfo("DNSPooler", "Stopping HTTPServer...");
+    this->stopThread = true;
+    this->thread.join();
+}
 
+void HTTPServer::run() {
+    this->stopThread = false;
+    this->thread = std::thread(&HTTPServer::listen, this);
+}

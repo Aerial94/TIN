@@ -42,7 +42,24 @@ int TCPSocket::listen(int backlog)
 
 int TCPSocket::accept()
 {
-    return ::accept(this->socketFileDescriptor, 0, 0);
+    fd_set rfds;
+    while (1)
+    {
+        FD_ZERO(&rfds);
+        FD_SET(this->socketFileDescriptor, &rfds);
+        int retval = select(this->socketFileDescriptor + 1, &rfds, nullptr, nullptr,
+                        &this->timeout);
+        if (retval > 0)
+        {
+            return ::accept(this->socketFileDescriptor, 0, 0);
+        }
+        else
+        {
+            /*Timeout or error*/
+            TimeoutException e;
+            throw e;
+        }
+    }
 }
 
 TCPSocket & TCPSocket::operator<<(const std::string & data)

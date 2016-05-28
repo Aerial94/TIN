@@ -7,6 +7,8 @@
 #include <list>
 #include <mutex>
 #include <condition_variable>
+#include <thread>
+#include <atomic>
 
 class Semaphore {
 public:
@@ -46,6 +48,10 @@ public:
     HTTPServer();
     void listen();
 
+    void stop();
+
+    void run();
+
 private:
     Semaphore semaphore;
     const std::string invalid_request = "HTTP/1.1 418 I'm teapot\r\n"
@@ -64,6 +70,9 @@ private:
     std::string valid_request_function(std::string &response_json);
 
     std::string invalid_request_function();
+
+    std::thread thread;
+    std::atomic_bool stopThread;
 };
 
 

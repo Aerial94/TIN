@@ -25,8 +25,8 @@ DNSPooler::DNSPooler(int interval) {
 }
 
 void DNSPooler::run() {
-    std::thread thread(&DNSPooler::pool, this);
-    thread.detach();
+    this->stopThread = false;
+    this->thread = std::thread(&DNSPooler::pool, this);
 }
 
 void DNSPooler::setInterval(int interval) {
@@ -34,12 +34,17 @@ void DNSPooler::setInterval(int interval) {
 }
 
 void DNSPooler::pool() {
-    while (true) {
-        Logger::getInstance().logInfo("DNSPooler", "Starting pooling...");
-        this->refreshDomains();
-        Logger::getInstance().logInfo("DNSPooler", "Pooling done");
-        std::chrono::seconds sleepTime(this->interval);
-        std::this_thread::sleep_for(sleepTime);
+    int sleepCounter = this->interval;
+    while (not this->stopThread) {
+        if (sleepCounter == this->interval) {
+            Logger::getInstance().logInfo("DNSPooler", "Starting pooling...");
+            this->refreshDomains();
+            Logger::getInstance().logInfo("DNSPooler", "Pooling done");
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sleepCounter--;
+        if (sleepCounter <= 0)
+            sleepCounter = this->interval;
     }
 }
 
@@ -99,7 +104,7 @@ void DNSPooler::refreshDomains() {
                         }
                         break;
                     }
-                    else if (recive.getAuthorityCount()){
+                    else if (recive.getAuthorityCount()) {
                         dnsServers.clear();
                         std::vector<DNSAuthoritativeNameServer> add = recive.getAuthorityNameServers();
                         for (auto j = add.begin(); j != add.end(); j++) {
@@ -111,8 +116,7 @@ void DNSPooler::refreshDomains() {
                                 continue;
                             }
                         }
-                        if (dnsServer.empty())
-                        {
+                        if (dnsServer.empty()) {
                             Database::getInstance().updateDomain(*d,
                                                                  Domain::NONEXISTENT);
                             mustGo = false;
@@ -120,15 +124,23 @@ void DNSPooler::refreshDomains() {
                         }
                         break;
                     }
-            }
-            else {
-                Database::getInstance().updateDomain(*d,
-                                                     Domain::NONEXISTENT);
-                mustGo = false;
-                break;
+                }
+                else {
+                    Database::getInstance().updateDomain(*d,
+                                                         Domain::NONEXISTENT);
+                    mustGo = false;
+                    break;
+                }
             }
         }
     }
-}
 
 }
+
+void DNSPooler::stop() {
+    Logger::getInstance().logInfo("DNSPooler", "Stopping DNSPooler...");
+    this->stopThread = true;
+    this->thread.join();
+}
+
+

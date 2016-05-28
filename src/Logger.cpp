@@ -7,18 +7,21 @@ Logger::Logger(LogLevel logLevel) : logLevel(logLevel) {
 void Logger::logInfo(std::string moduleName, std::string message) {
     if (this->logLevel < LogLevel::INFO)
         return;
+    std::lock_guard<std::mutex> guard(this->mutex);
     this->appendToLogFile("[INFO]", moduleName, message);
 }
 
 void Logger::logWarning(std::string moduleName, std::string message) {
     if (this->logLevel < LogLevel::WARNING)
         return;
+    std::lock_guard<std::mutex> guard(this->mutex);
     this->appendToLogFile("[WARNING]", moduleName, message);
 }
 
 void Logger::logDebug(std::string moduleName, std::string message) {
     if (this->logLevel < LogLevel::DEBUG)
         return;
+    std::lock_guard<std::mutex> guard(this->mutex);
     this->appendToLogFile("[DEBUG]", moduleName, message);
 
 }
@@ -27,18 +30,22 @@ Logger::~Logger() {
     this->close();
 }
 
+/*
+ * WARNING: this function must be called after acquiring the lock of mutex
+ */
 void Logger::appendToLogFile(std::string level, std::string moduleName,
                              std::string message) {
-    std::lock_guard<std::mutex> guard(this->mutex);
-    this->logFile << this->getCurrentTimeDate();
-    this->logFile << " ";
-    this->logFile << level;
-    this->logFile << " ";
-    this->logFile << "(" << moduleName << ")";
-    this->logFile << " ";
-    this->logFile << message;
-    this->logFile << "\n";
-    this->logFile.flush();
+    if (not disabled) {
+        this->logFile << this->getCurrentTimeDate();
+        this->logFile << " ";
+        this->logFile << level;
+        this->logFile << " ";
+        this->logFile << "(" << moduleName << ")";
+        this->logFile << " ";
+        this->logFile << message;
+        this->logFile << "\n";
+        this->logFile.flush();
+    }
 }
 
 std::string Logger::getCurrentTimeDate() {
@@ -69,11 +76,19 @@ Logger &Logger::getInstance() {
 
 
 Logger::Logger() {
+    this->disabled = false;
     this->logFile.open("log.txt", std::ios_base::app);
     this->logLevel = LogLevel::NONE;
 }
 
 void Logger::setLogLevel(LogLevel logLevel) {
     this->logLevel = logLevel;
+}
+
+void Logger::stop() {
+    std::lock_guard<std::mutex> guard(this->mutex);
+    this->appendToLogFile("[INFO]", "Exit", "Closing log file...");
+    this->disabled = true;
+    this->close();
 }
 
