@@ -39,12 +39,14 @@ int TCPSocket::listen(int backlog) {
 
 int TCPSocket::accept() {
     fd_set rfds;
+    struct timeval timeout = this->timeout;
     while (1) {
         FD_ZERO(&rfds);
         FD_SET(this->socketFileDescriptor, &rfds);
         int retval = select(this->socketFileDescriptor + 1, &rfds, nullptr,
                             nullptr,
-                            &this->timeout);
+                            &timeout);
+        timeout = this->timeout;
         if (retval > 0) {
             return ::accept(this->socketFileDescriptor, 0, 0);
         }
@@ -128,9 +130,8 @@ char TCPSocket::readByte() {
             this->bufferSize = (int) receive_size;
             return this->readByte();
         }
-        else if (receive_size < 0) {
+        else if (receive_size <= 0) {
             return EOF;
         }
     }
 }
-

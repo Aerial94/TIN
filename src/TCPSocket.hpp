@@ -37,7 +37,6 @@ public:
     void serveForever(int port);
     void bindAll(int port);
     char readByte();
-
 };
 
 #endif /* TCPSOCKET_HPP_ */
