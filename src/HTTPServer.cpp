@@ -9,7 +9,15 @@
 HTTPServer::HTTPServer() {
     Configuration configuration = Configuration::getInstance();
     SocketAddress address;
-    address.setAddress(configuration.getHttpServerAddress());
+    if(not address.setAddress(configuration.getHttpServerAddress())){
+        Logger::getInstance().logInfo("Server", "Cant listen on address: '" +
+                                                configuration.getHttpServerAddress() +
+                                                "' beacause it seems to be invalid");
+        std::cout << "Cant listen on address '" +
+                     configuration.getHttpServerAddress() +
+                     "' beacause it seems to be invalid\n";
+        std::exit(-1);
+    }
     address.setPort(configuration.getHttpServerPort());
     this->socket.setReuseAddress();
     if (this->socket.bind(address) < 0) {
