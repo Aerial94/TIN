@@ -80,11 +80,7 @@ UDPSocket &UDPSocket::operator<<(const DNSPacket &packet) {
 }
 
 UDPSocket &UDPSocket::operator>>(DNSPacket &packet) {
-    struct timeval tv;
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
-    setsockopt(this->socketFileDescriptor, SOL_SOCKET, SO_RCVTIMEO, &tv,
-               sizeof(tv));
+    this->setTimeout(1, 0);
     unsigned char *data = (unsigned char *) this->read(MAX_UDP_PACKET_SIZE);
     packet.parseRawBuffer(data, MAX_UDP_PACKET_SIZE);
     return *this;
