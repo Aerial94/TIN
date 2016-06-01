@@ -42,7 +42,13 @@ void SocketAddress::setPort(std::string port)
 
 int SocketAddress::setAddress(const std::string address)
 {
-    return inet_aton(address.c_str(), &this->internalAddress.sin_addr);
+    if (address == "*") {
+        this->internalAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+        return true;
+    }
+    else {
+        return inet_aton(address.c_str(), &this->internalAddress.sin_addr);
+    }
 }
 
 int SocketAddress::setAssociation(std::string association)
