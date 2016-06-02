@@ -33,7 +33,7 @@ public:
     int accept();
     TCPSocket & operator<<(const std::string & data);
     std::string readLine();
-	std::string read_from_socket(int size);
+	std::string read_from_socket(unsigned int size);
     void serveForever(int port);
     void bindAll(int port);
     char readByte();

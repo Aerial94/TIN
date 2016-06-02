@@ -85,7 +85,7 @@ std::string TCPSocket::readLine() {
     return data;
 }
 
-std::string TCPSocket::read_from_socket(int size) {
+std::string TCPSocket::read_from_socket(unsigned int size) {
     std::string data;
     while (size--) {
         char c = this->readByte();
