@@ -4,7 +4,7 @@
  * Default constructor for TCPSocket
  */
 TCPSocket::TCPSocket() {
-    this->bufferNotEmpty = 0;
+    this->bufferNotEmpty = false;
     this->currentReadPos = 0;
     this->isConnected = 0;
     this->socketFileDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -12,6 +12,9 @@ TCPSocket::TCPSocket() {
 
 TCPSocket::TCPSocket(int socketFileDescriptor) {
     this->socketFileDescriptor = socketFileDescriptor;
+    this->bufferNotEmpty = false;
+    this->currentReadPos = 0;
+    this->isConnected = 0;
 }
 
 TCPSocket::~TCPSocket() {
@@ -131,6 +134,7 @@ char TCPSocket::readByte() {
             return this->readByte();
         }
         else if (receive_size <= 0) {
+            this->bufferNotEmpty = false;
             return EOF;
         }
     }
