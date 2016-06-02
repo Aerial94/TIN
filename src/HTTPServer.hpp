@@ -13,8 +13,9 @@
 class Semaphore {
 public:
 
-    Semaphore() {this->count = 0;}
-    Semaphore(int count) { this->count = count;}
+    Semaphore() { this->count = 0; }
+
+    Semaphore(int count) { this->count = count; }
 
     void notify() {
         std::unique_lock<std::mutex> lck(mtx);
@@ -31,8 +32,7 @@ public:
         --count;
     }
 
-    void setCount(int count)
-    {
+    void setCount(int count) {
         this->count = count;
     }
 
@@ -46,6 +46,7 @@ private:
 class HTTPServer {
 public:
     HTTPServer();
+
     void listen();
 
     void stop();
@@ -54,15 +55,15 @@ public:
 
 private:
     Semaphore semaphore;
-    const std::string invalid_request = "HTTP/1.1 418 I'm teapot\r\n"
-            "Content-Length: 0\r\n"
+    const char* invalid_request = "Server: dns-checker\r\n"
             "Connection: Closed\r\n"
+            "Content-Length: 0\r\n"
             "\r\n";
 
-    const std::string valid_request = "HTTP/1.1 200 OK\r\n"
-            "Content-Length: {0}\r\n"
+    const char * valid_request = "Server: dns-checker\r\n"
+            "Connection: Closed\r\n"
             "Content-Type: application/json\r\n"
-            "Connection: Closed\r\n";
+            "Content-Length: {0}\r\n";
     TCPSocket socket;
 
     void response(int clientSocket);

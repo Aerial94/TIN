@@ -9,7 +9,7 @@
 HTTPServer::HTTPServer() {
     Configuration configuration = Configuration::getInstance();
     SocketAddress address;
-    if(not address.setAddress(configuration.getHttpServerAddress())){
+    if (not address.setAddress(configuration.getHttpServerAddress())) {
         Logger::getInstance().logInfo("Server", "Cant listen on address: '" +
                                                 configuration.getHttpServerAddress() +
                                                 "' beacause it seems to be invalid");
@@ -106,7 +106,15 @@ void HTTPServer::response(int clientSocket) {
 
 
 std::string HTTPServer::valid_request_function(std::string &response_json) {
-    std::string response(this->valid_request);
+    std::string response = this->valid_request;
+    char buf[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    response.insert(0, "\r\n");
+    response.insert(0, buf);
+    response.insert(0, "Date: ");
+    response.insert(0, "HTTP/1.1 200 OK\r\n");
     size_t f = response.find("{0}");
     response.replace(f, std::string("{0}").length(),
                      std::to_string(response_json.size()));
@@ -115,7 +123,15 @@ std::string HTTPServer::valid_request_function(std::string &response_json) {
 }
 
 std::string HTTPServer::invalid_request_function() {
-    std::string response(this->invalid_request);
+    std::string response = this->invalid_request;
+    char buf[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    response.insert(0, "\r\n");
+    response.insert(0, buf);
+    response.insert(0, "Date: ");
+    response.insert(0, "HTTP/1.1 418 I'm teapot\r\n");
     return response;
 
 }
