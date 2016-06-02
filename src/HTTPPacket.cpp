@@ -4,6 +4,7 @@
 
 HTTPPacket::HTTPPacket(){
 	valid_request = false;
+    this->contentLength = 0;
 }
 
 
@@ -11,7 +12,7 @@ std::string HTTPPacket::get_json()
 {
 	return this->json;
 }
-size_t HTTPPacket::get_content_length(){
+unsigned int HTTPPacket::get_content_length(){
 	return this->contentLength;
 }
 
