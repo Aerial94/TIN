@@ -80,7 +80,7 @@ UDPSocket &UDPSocket::operator<<(const DNSPacket &packet) {
 }
 
 UDPSocket &UDPSocket::operator>>(DNSPacket &packet) {
-    this->setTimeout(1, 0);
+    this->setTimeout(0, 500000);
     unsigned char *data = (unsigned char *) this->read(MAX_UDP_PACKET_SIZE);
     packet.parseRawBuffer(data, MAX_UDP_PACKET_SIZE);
     return *this;
