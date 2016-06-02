@@ -41,8 +41,7 @@ def query_test(domains_table):
     payload["com"] = "ry"
     payload["mains"] = domains_table
     r = requests.post("http://localhost:8080", json=payload)
-    for re in r.json()['result']:
-        print (re['domain'] + " => " + re['status'])
+    print (r.headers)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("command", choices=("add", "remove", "query", "test"))
