@@ -49,10 +49,10 @@ void DNSPooler::pool() {
 }
 
 void DNSPooler::refreshDomains() {
-    std::vector<std::string> domainsNames = Database::getInstance().copy();
+    std::vector<Domain> domainsNames = Database::getInstance().copy();
     for (auto d = domainsNames.begin(); d != domainsNames.end(); ++d) {
         Logger::getInstance().logInfo("DNSPooler",
-                                      "Refreshing domain: " + *d);
+                                      "Refreshing domain: " + d->getDomainName());
         bool mustGo = true;
         std::vector<std::string> dnsServers = this->rootServers;
         while (mustGo) {
@@ -61,7 +61,7 @@ void DNSPooler::refreshDomains() {
 
                 DNSPacket dnsPacket;
                 dnsPacket.markAsQuestion();
-                DNSQuestion dnsQuestion(*d);
+                DNSQuestion dnsQuestion(d->getDomainName());
                 dnsPacket.addQuestion(dnsQuestion);
 
                 SocketAddress address;
@@ -78,7 +78,7 @@ void DNSPooler::refreshDomains() {
                 catch (TimeoutException &e) {
                     Logger::getInstance().logWarning("DNSPooler",
                                                      "Timeout while refreshing domain: " +
-                                                     *d +
+                                                     d->getDomainName() +
                                                      " using DNS Server: " +
                                                      dnsServer);
                     if (dnsServers.end() - i == 1) {
@@ -88,8 +88,13 @@ void DNSPooler::refreshDomains() {
                 }
                 if (recive.isOk()) {
                     if (recive.getAnswerCount() != 0) {
-                        Database::getInstance().updateDomain(*d,
-                                                             Domain::FOLLOWED);
+                        std::vector<DNSAnswer> answers = recive.getAnswers();
+                        DNSAnswer answer = answers[0];
+                        in_addr addresStruct;
+                        addresStruct.s_addr = answer.getIP();
+                        const char *result = inet_ntoa(addresStruct);
+                        std::string ipString = result;
+                        Database::getInstance().updateDomain(d->getDomainName(), ipString);
                         mustGo = false;
                         break;
                     }
@@ -117,7 +122,7 @@ void DNSPooler::refreshDomains() {
                             }
                         }
                         if (dnsServer.empty()) {
-                            Database::getInstance().updateDomain(*d,
+                            Database::getInstance().updateDomain(d->getDomainName(),
                                                                  Domain::NONEXISTENT);
                             mustGo = false;
                             break;
@@ -126,7 +131,7 @@ void DNSPooler::refreshDomains() {
                     }
                 }
                 else {
-                    Database::getInstance().updateDomain(*d,
+                    Database::getInstance().updateDomain(d->getDomainName(),
                                                          Domain::NONEXISTENT);
                     mustGo = false;
                     break;

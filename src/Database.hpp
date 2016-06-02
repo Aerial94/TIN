@@ -28,11 +28,13 @@ public:
         return instance;
     }
 
-    HTTPHandler::MessageStatus getDomainStatus(std::string dName);
+    std::pair<HTTPHandler::MessageStatus, Domain> getDomainStatus(
+            std::string dName);
     HTTPHandler::MessageStatus addDomain(std::string dName);
     HTTPHandler::MessageStatus removeDomain(std::string dName);
     HTTPHandler::MessageStatus updateDomain(std::string dName, Domain::DomainStatus status);
-    std::vector<std::string> copy();
+    HTTPHandler::MessageStatus updateDomain(std::string dName, std::string ipAddress);
+    std::vector<Domain> copy();
     std::string getNextDomain();
 
     std::vector<Domain>::iterator unsafeFindDomain(std::string domainName);

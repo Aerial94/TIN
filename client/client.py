@@ -34,7 +34,10 @@ def query_domains(domains_table):
     r = requests.post("http://localhost:8080", json=payload)
     if r.json()['result']:
         for re in r.json()['result']:
-            print (re['domain'] + " => " + re['status'])
+            if "ip" in re:
+                print (re['domain'] + " =>\t" + re['ip'])
+            else:
+                print (re['domain'] + " =>\t" + re['status'])
 
 def query_test(domains_table):
     payload = {}

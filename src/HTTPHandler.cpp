@@ -84,13 +84,29 @@ void HTTPHandler::chooseAction(std::string &json)
     else if(this->command == queryAction)
     {
         if (this->star) {
-            std::vector<std::string> copyDomains = Database::getInstance().copy();
+            std::vector<Domain> copyDomains = Database::getInstance().copy();
             for (auto it = copyDomains.begin(); it != copyDomains.end(); ++it){
-                this->vecOfDomains.append(*it);
-                this->pair["domain"] = *it;
-                HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
-                this->pair["status"] = statusToString(status);
-                this->vecOfDomainStatusPairs.append(this->pair);
+                this->vecOfDomains.append(it->getDomainName());
+                Json::Value pair;
+                pair["domain"] = it->getDomainName();
+                HTTPHandler::MessageStatus status;
+                switch(it->getStatus())
+                {
+                    case Domain::DomainStatus::FOLLOWED:
+                        status = HTTPHandler::MessageStatus::OK;;
+                        break;
+                    case Domain::DomainStatus ::FOLLOWED_BUT_UNCHECKED:
+                        status = HTTPHandler::MessageStatus::UNKNOWN;
+                        break;
+                    case Domain::DomainStatus::NONEXISTENT:
+                        status = HTTPHandler::MessageStatus::UNREACHABLE;
+                        break;
+                }
+                pair["status"] = statusToString(status);
+                if (it->getStatus() == Domain::DomainStatus::FOLLOWED) {
+                    pair["ip"] = it->getIP();
+                }
+                this->vecOfDomainStatusPairs.append(pair);
                 Logger::getInstance().logInfo("HTTPHandler", "All domains were queued");
             }
         }
@@ -98,10 +114,14 @@ void HTTPHandler::chooseAction(std::string &json)
             for(auto it = this->domains.begin(); it != this->domains.end(); ++it)
             {
                 this->vecOfDomains.append(*it);
-                this->pair["domain"] = *it;
-                HTTPHandler::MessageStatus status = Database::getInstance().getDomainStatus(*it);
-                this->pair["status"] = statusToString(status);
-                this->vecOfDomainStatusPairs.append(this->pair);
+                Json::Value pair;
+                pair["domain"] = *it;
+                std::pair<HTTPHandler::MessageStatus, Domain> result = Database::getInstance().getDomainStatus(*it);
+                pair["status"] = statusToString(result.first);
+                if (result.second.getStatus() == Domain::DomainStatus::FOLLOWED) {
+                    pair["ip"] = result.second.getIP();
+                }
+                this->vecOfDomainStatusPairs.append(pair);
                 Logger::getInstance().logInfo("HTTPHandler", "The following domains were queued: " + getAllDomainNames());
             }
         }

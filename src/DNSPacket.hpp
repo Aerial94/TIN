@@ -55,6 +55,8 @@ public:
     int address;
 
     int getSize();
+
+    in_addr_t getIP();
 };
 
 class DNSAuthoritativeNameServer {
@@ -162,6 +164,8 @@ public:
     std::vector<DNSAdditionalRecord>& getAdditional();
 
     std::vector<DNSAuthoritativeNameServer> getAuthorityNameServers();
+
+    std::vector<DNSAnswer> getAnswers();
 };
 
 std::string hostnameToIP(std::string hostname);

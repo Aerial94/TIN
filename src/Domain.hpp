@@ -9,12 +9,14 @@ public:
 private:
     std::string domainName;
     DomainStatus status;
-
+    std::string ip;
 public:
     Domain(std::string dName);
     DomainStatus getStatus();
     void setStatus(DomainStatus status);
+    void setIP(std::string ipAddress);
     std::string getDomainName();
+    std::string getIP();
 };
 
 

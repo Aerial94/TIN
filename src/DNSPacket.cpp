@@ -32,8 +32,13 @@ bool DNSPacket::parseRawBuffer(unsigned char *buffer, int size) {
     for (int j = 0; j < this->answerRecordCount; j++) {
         DNSAnswer answer;
         bool ip = answer.setRaw((char *) &buffer[i]);
-        this->answers.push_back(answer);
+        if (ip) {
+            this->answers.push_back(answer);
+        }
         i += answer.getSize();
+    }
+    if (this->answers.empty()) {
+        this->answerRecordCount = 0;
     }
     for (int j = 0; j < this->authorityRecordCount; j++) {
         DNSAuthoritativeNameServer authoritativeNameServer;
@@ -167,6 +172,10 @@ std::vector<DNSAdditionalRecord> &DNSPacket::getAdditional() {
 
 std::vector<DNSAuthoritativeNameServer> DNSPacket::getAuthorityNameServers() {
     return this->authority;
+}
+
+std::vector<DNSAnswer> DNSPacket::getAnswers() {
+    return this->answers;
 }
 
 
@@ -311,14 +320,18 @@ bool DNSAnswer::setRaw(char *data) {
     size += 2;
     this->address = *(int *) &data[size];
     size += (data[10] << 8) | data[11];
-    if (data[2] == 0x0 and data[3] == 0x1c) {
-        return false;
+    if (data[2] == 0x0 and data[3] == 0x01 and data[4] == 0x0 and data[5] == 0x1) {
+        return true;
     }
-    return true;
+    return false;
 }
 
 int DNSAnswer::getSize() {
     return this->size;
+}
+
+in_addr_t DNSAnswer::getIP() {
+    return this->address;
 }
 
 

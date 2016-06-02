@@ -23,3 +23,14 @@ std::string Domain::getDomainName()
 {
     return this->domainName;
 }
+
+void Domain::setIP(std::string ipAddress) {
+    this->ip = ipAddress;
+}
+
+std::string Domain::getIP() {
+    return this->ip;
+}
+
+
+
