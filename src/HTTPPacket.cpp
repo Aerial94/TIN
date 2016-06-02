@@ -17,7 +17,19 @@ size_t HTTPPacket::get_content_length(){
 
 void HTTPPacket::save_line(std::string line)
 {
+	if (line.length() < 3) {
+		/*
+		 * Line should contain at least char + \r\n
+		 */
+		return;
+	}
+    /*
+     * Pop out \n
+     */
 	line = line.erase(line.length() - 1);
+    /*
+     * Pop out \r
+     */
 	line = line.erase(line.length() - 1);
 	if(line.find("HTTP/") != std::string::npos){
 		if(line.find("POST") != std::string::npos){
