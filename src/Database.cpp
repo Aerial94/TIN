@@ -55,8 +55,9 @@ HTTPHandler::MessageStatus Database::addDomain(std::string dName) {
 HTTPHandler::MessageStatus Database::removeDomain(std::string dName) {
     Logger::getInstance().logInfo("Database", "Remove domain: " + dName);
     std::lock_guard<std::mutex> guard(mutex);
-    if (unsafeFindDomain(dName) != domains.end()) {
-        domains.erase(unsafeFindDomain(dName));
+    std::vector<Domain>::iterator domain;
+    if ((domain = unsafeFindDomain(dName)) != domains.end()) {
+        domains.erase(domain);
         return HTTPHandler::MessageStatus::OK;
     }
     return HTTPHandler::MessageStatus::NO_IN_DATABASE;
@@ -66,8 +67,9 @@ HTTPHandler::MessageStatus Database::removeDomain(std::string dName) {
 HTTPHandler::MessageStatus Database::updateDomain(std::string dName,
                                                   Domain::DomainStatus status) {
     std::lock_guard<std::mutex> guard(mutex);
-    if (unsafeFindDomain(dName) != domains.end()) {
-        (*unsafeFindDomain(dName)).setStatus(status);
+    std::vector<Domain>::iterator domain;
+    if ((domain = unsafeFindDomain(dName)) != domains.end()) {
+        domain->setStatus(status);
         return HTTPHandler::MessageStatus::OK;
     }
     return HTTPHandler::MessageStatus::NO_IN_DATABASE;
