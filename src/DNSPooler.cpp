@@ -53,6 +53,7 @@ void DNSPooler::refreshDomains() {
     for (auto d = domainsNames.begin(); d != domainsNames.end(); ++d) {
         Logger::getInstance().logInfo("DNSPooler",
                                       "Refreshing domain: " + d->getDomainName());
+        int depth = 0;
         bool mustGo = true;
         std::vector<std::string> dnsServers = this->rootServers;
         while (mustGo) {
@@ -86,7 +87,7 @@ void DNSPooler::refreshDomains() {
                     }
                     continue;
                 }
-                if (recive.isOk()) {
+                if (recive.isOk() and depth < 128) {
                     if (recive.getAnswerCount() != 0) {
                         std::vector<DNSAnswer> answers = recive.getAnswers();
                         DNSAnswer answer = answers[0];
@@ -129,6 +130,7 @@ void DNSPooler::refreshDomains() {
                         }
                         break;
                     }
+                    depth++;
                 }
                 else {
                     Database::getInstance().updateDomain(d->getDomainName(),
