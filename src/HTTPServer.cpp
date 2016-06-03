@@ -109,8 +109,8 @@ std::string HTTPServer::valid_request_function(std::string &response_json) {
     std::string response = this->valid_request;
     char buf[1000];
     time_t now = time(0);
-    struct tm tm = *gmtime(&now);
-    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    struct tm * tm = gmtime(&now);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", tm);
     response.insert(0, "\r\n");
     response.insert(0, buf);
     response.insert(0, "Date: ");
@@ -126,8 +126,8 @@ std::string HTTPServer::invalid_request_function() {
     std::string response = this->invalid_request;
     char buf[1000];
     time_t now = time(0);
-    struct tm tm = *gmtime(&now);
-    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    struct tm * tm = gmtime(&now);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", tm);
     response.insert(0, "\r\n");
     response.insert(0, buf);
     response.insert(0, "Date: ");
