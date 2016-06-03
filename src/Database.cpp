@@ -40,8 +40,14 @@ HTTPHandler::MessageStatus Database::addDomain(std::string dName) {
     //check if it does't already exist in database
     if (unsafeFindDomain(dName) != domains.end() && !domains.empty())
         return HTTPHandler::MessageStatus::ALREADY_IN_DATABASE;
+    Domain domain(dName);
 
-    domains.push_back(Domain(dName));
+    /*
+     * Set timestamp for first time when domain is saved in database
+     */
+    domain.setTimestamp(time(0));
+
+    domains.push_back(domain);
     return HTTPHandler::MessageStatus::OK;
 }
 

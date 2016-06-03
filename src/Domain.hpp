@@ -10,6 +10,7 @@ private:
     std::string domainName;
     DomainStatus status;
     std::string ip;
+    time_t timestamp;
 public:
     Domain(std::string dName);
     DomainStatus getStatus();
@@ -17,6 +18,10 @@ public:
     void setIP(std::string ipAddress);
     std::string getDomainName();
     std::string getIP();
+
+    void setTimestamp(time_t timestamp);
+    time_t getTimestamp() const;
+
 };
 
 

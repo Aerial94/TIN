@@ -84,6 +84,9 @@ void HTTPHandler::chooseAction(std::string &json)
     else if(this->command == queryAction)
     {
         if (this->star) {
+            /*
+             * Here we need to return all domains from database
+             */
             std::vector<Domain> copyDomains = Database::getInstance().copy();
             for (auto it = copyDomains.begin(); it != copyDomains.end(); ++it){
                 this->vecOfDomains.append(it->getDomainName());
@@ -106,6 +109,7 @@ void HTTPHandler::chooseAction(std::string &json)
                 if (it->getStatus() == Domain::DomainStatus::FOLLOWED) {
                     pair["ip"] = it->getIP();
                 }
+                pair["timestamp"] = (unsigned int)it->getTimestamp();
                 this->vecOfDomainStatusPairs.append(pair);
                 Logger::getInstance().logInfo("HTTPHandler", "All domains were queued");
             }
@@ -121,6 +125,7 @@ void HTTPHandler::chooseAction(std::string &json)
                 if (result.second.getStatus() == Domain::DomainStatus::FOLLOWED) {
                     pair["ip"] = result.second.getIP();
                 }
+                pair["timestamp"] = (unsigned int)result.second.getTimestamp();
                 this->vecOfDomainStatusPairs.append(pair);
                 Logger::getInstance().logInfo("HTTPHandler", "The following domains were queued: " + getAllDomainNames());
             }
