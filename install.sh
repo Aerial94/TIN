@@ -8,3 +8,4 @@ mkdir build
 cd build
 cmake ..
 make dns-checker
+cp ../conf/configuration.json .
