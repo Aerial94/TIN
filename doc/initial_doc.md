@@ -1,6 +1,6 @@
 # TIN Projekt
-## Domain Checker - Cykliczny analizator dostępności domen
-## Dokumentacja wstępna
+## DNS Checker - Cykliczny analizator dostępności domen
+## Dokumentacja ostateczna
 
 #### Skład zespołu projektowego
 - Radosław Załuska
@@ -178,10 +178,11 @@ Dla każdej domeny (D):
     {"task": {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl"]},
     "result":
     [
-    {"domain":"google.com", "status":"ok"},
-    {"domain":"elka.pw.edu.pl", "staus": "no_in_database"},
-    {"domain":"wp.pl", "staus": "unreachable"},
-    {"domain":"github.com", "staus": "unknown"}]}
+    {"domain":"google.com", "status":"ok", "timestamp": 1465388431, "ip": "134.32.23.39"},
+    {"domain":"elka.pw.edu.pl", "staus": "no_in_database", timestamp: 0},
+    {"domain":"wp.pl", "staus": "unreachable", "timestamp": 1465388587},
+    {"domain":"github.com", "staus": "unknown", "timestamp": 1465389587}
+    }
     ```
     i odsyła pakiet HTTP do użytkownia
 6. HTTPHandler rozłącza się z użytkownikiem (close(socket))
@@ -238,15 +239,16 @@ informację o wyłączaniu.
 {"task": {"command":"query", "domains": ["google.com", "elka.pw.edu.pl", "wp.pl"]},
 "result":
     [
-        {"domain":"google.com", "status":"ok"},  //domena jest znana na serwerze
-        //i odpowiada na zapytania
-        {"domain":"elka.pw.edu.pl", "staus": "no_in_database"} // domena jest
-        //niezanana na serwerze
-        {"domain":"wp.pl", "staus": "unreachable"} //domena jest znana na
-        //serwerze ale nie odpowiada na zapytania
-        {"domain":"github.com", "staus": "unknown"} //domena jest znana
-        //na serwerze ale nie była jeszcze odpytywana lub konfiguracja siecowa
-        //serwera uniemożliwia jej odpytanie
+
+        //domena jest znana na serwerze i odpowiada na zapytania
+        {"domain":"google.com", "status":"ok", "timestamp": 1465388431, "ip": "134.32.23.39"},
+        // domena jest niezanana na serwerze
+        {"domain":"elka.pw.edu.pl", "staus": "no_in_database", "timestamp": 0},
+        //domena jest znana na serwerze ale nie odpowiada na zapytania
+        {"domain":"wp.pl", "staus": "unreachable", "timestamp": 1465388587},
+        //domena jest znana na serwerze ale nie była jeszcze odpytywana lub
+        // konfiguracja siecowa serwera uniemożliwia jej odpytanie
+        {"domain":"github.com", "staus": "unknown", "timestamp": 1465389587}
     ]
 }
 ```
@@ -255,7 +257,7 @@ informację o wyłączaniu.
 ### Budowanie ze źródeł
 #### Ubuntu 14.04
 ```bash
-sudo apt-get install cmake libjsoncpp git build-essential
+sudo apt-get install cmake libjsoncpp-dev git build-essential
 git clone https://github.com/Aerial94/TIN
 cd TIN
 mkdir build
@@ -268,6 +270,23 @@ make
 cd TIN
 cd build
 ./domain-checker
+```
+#### Parametry programu
+- -f - program nie odseparowuje się od terminiala i nie staje się deamonem
+systemowym - przydatne gdy chcemy mieć możliwość jego szybkiego zamknięcie
+poprzez Ctrl+C
+- -h - wypisuje krótki komunikat pomocy
+- -v - informacja o wersji programu
+
+Parametry programu są obsługiwane przez funkcję getopt() biblioteki GNU C.
+
+#### Tryb deamon
+Program wywołany bez parametru -f przechodzi na drugi plan terminala i odłącz
+się od niego. W takim przypadku aby zakończyć jego działanie możemy się posłużyć
+plikiem dns-checker.pid utorzonym w katalogu programu. Jest w nim zapisany PID
+procesu dns-checker. Aby zatrzymać program wydajemy polecenie:
+```bash
+kill -SIGTERM $(cat dns-checker.pid)
 ```
 
 ## Zmiana parametrów programu
@@ -310,7 +329,7 @@ httpServer.readTimeout // czas oczekiwania na komunikat od klienta po połączen
                        // (w sekundach)
 httpServer.maxThreads // maksymalna ilość wątków HTTPHandler mogących działać w
                       // jednym momencie
-dnsPooler.interval // definiuje co jaki czas ma odbyć sie sprawdzenie statusu
+dnsPooler.interval // definiuje co jaki czas mo odbyć się sprawdzenie
                    // domen (w sekundach)
 logLevel // poziom logowania
 logLevel = INFO // Podstawowe informacje o pracy programu
