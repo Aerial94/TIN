@@ -1,47 +1,39 @@
 #include "SocketAddress.hpp"
 
-void SocketAddress::init()
-{
+void SocketAddress::init() {
     std::memset(&this->internalAddress, 0, sizeof(struct sockaddr_in));
     this->internalAddress.sin_family = AF_INET;
 }
 
-SocketAddress::SocketAddress()
-{
+SocketAddress::SocketAddress() {
     this->init();
     this->internalAddress.sin_port = 0;
     this->internalAddress.sin_addr.s_addr = INADDR_ANY;
 }
 
-SocketAddress::SocketAddress(const std::string & association)
-{
+SocketAddress::SocketAddress(const std::string &association) {
     this->init();
     this->setAssociation(association);
 }
 
-SocketAddress::SocketAddress(const char * association)
-{
+SocketAddress::SocketAddress(const char *association) {
     this->init();
     this->setAssociation(association);
 }
 
-SocketAddress::~SocketAddress()
-{
+SocketAddress::~SocketAddress() {
 }
 
-void SocketAddress::setPort(short port)
-{
+void SocketAddress::setPort(short port) {
     this->internalAddress.sin_port = htons(port);
 }
 
-void SocketAddress::setPort(std::string port)
-{
+void SocketAddress::setPort(std::string port) {
     short p = atoi(port.c_str());
     this->setPort(p);
 }
 
-int SocketAddress::setAddress(const std::string address)
-{
+int SocketAddress::setAddress(const std::string address) {
     if (address == "*") {
         this->internalAddress.sin_addr.s_addr = htonl(INADDR_ANY);
         return true;
@@ -51,8 +43,7 @@ int SocketAddress::setAddress(const std::string address)
     }
 }
 
-int SocketAddress::setAssociation(std::string association)
-{
+int SocketAddress::setAssociation(std::string association) {
     auto position = association.find_first_of(":");
     auto address = association.substr(0, position);
     auto port = association.substr(position + 1, association.size());
@@ -60,23 +51,19 @@ int SocketAddress::setAssociation(std::string association)
     this->setAddress(address);
 }
 
-short SocketAddress::getPort()
-{
+short SocketAddress::getPort() {
     return ntohs(this->internalAddress.sin_port);
 }
 
-std::string SocketAddress::getAddress()
-{
+std::string SocketAddress::getAddress() {
     return std::string(inet_ntoa(this->internalAddress.sin_addr));
 }
 
-struct sockaddr * SocketAddress::toInternalAddressStructPointer() const
-{
+struct sockaddr *SocketAddress::toInternalAddressStructPointer() const {
     return (struct sockaddr *)(&(this->internalAddress));
 }
 
-unsigned int SocketAddress::getSize() const
-{
+unsigned int SocketAddress::getSize() const {
     return sizeof(this->internalAddress);
 }
 

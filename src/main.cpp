@@ -1,19 +1,19 @@
-#include "TCPSocket.hpp"
-#include "Logger.hpp"
 #include "DNSPooler.hpp"
 #include "Database.hpp"
 #include "HTTPServer.hpp"
+#include "Logger.hpp"
+#include "TCPSocket.hpp"
 #include "Util.hpp"
+#include <atomic>
 #include <signal.h>
 #include <stdlib.h>
-#include <atomic>
 
 std::atomic_bool stopThreads;
-static void hdl (int sig, siginfo_t *siginfo, void *context) {
+static void hdl(int sig, siginfo_t *siginfo, void *context) {
     switch (sig) {
-        case SIGINT:
-        case SIGTERM:
-            stopThreads = true;
+    case SIGINT:
+    case SIGTERM:
+        stopThreads = true;
     }
 }
 
@@ -22,18 +22,18 @@ int main(int argc, char *argv[]) {
     bool background = true;
     while ((opt = getopt(argc, argv, "fhv")) != -1) {
         switch (opt) {
-            case 'f':
-                background = false;
-                break;
-            case 'v':
-                fprintf(stdout, "dns-checker v 1.0\n");
-                exit(EXIT_SUCCESS);
-                break;
-            case 'h':
-            default:
-                fprintf(stderr, "Usage: %s [-fhv]\n", argv[0]);
-                exit(EXIT_FAILURE);
-                break;
+        case 'f':
+            background = false;
+            break;
+        case 'v':
+            fprintf(stdout, "dns-checker v 1.0\n");
+            exit(EXIT_SUCCESS);
+            break;
+        case 'h':
+        default:
+            fprintf(stderr, "Usage: %s [-fhv]\n", argv[0]);
+            exit(EXIT_FAILURE);
+            break;
         }
     }
     try {
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     Logger::getInstance().setLogLevel(
-            Configuration::getInstance().getLogLevel());
+        Configuration::getInstance().getLogLevel());
     Logger::getInstance().logInfo("Main", "Application starting...");
     if (background) {
         Util::deamonize();
@@ -67,13 +67,13 @@ int main(int argc, char *argv[]) {
     stopThreads = false;
     while (true) {
         if (stopThreads) {
-            sigprocmask (SIG_BLOCK, &signal_set, NULL);
+            sigprocmask(SIG_BLOCK, &signal_set, NULL);
             Logger::getInstance().logInfo("Main", "Stopping dns-checker...");
             dnsPooler.stop();
             server.stop();
             Logger::getInstance().logInfo("Main", "Done stopping dns-checker");
             Logger::getInstance().stop();
-            sigprocmask (SIG_UNBLOCK, &signal_set, NULL);
+            sigprocmask(SIG_UNBLOCK, &signal_set, NULL);
             break;
         }
         pause();

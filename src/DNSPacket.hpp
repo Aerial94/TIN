@@ -1,42 +1,46 @@
 #ifndef DNS_CHECKER_DNSPACKET_HPP
 #define DNS_CHECKER_DNSPACKET_HPP
 
+#include "UDPSocket.hpp"
 #include <cstdlib>
 #include <ctime>
+#include <netdb.h>
 #include <string>
 #include <vector>
-#include <netdb.h>
-#include "UDPSocket.hpp"
 
-
-class FQDN {
+class FQDN
+{
     std::string name;
-private:
+
+  private:
     short pointer;
-public:
+
+  public:
     FQDN() {
         this->pointer = 0;
     }
-    char * toRaw();
+    char *toRaw();
     void fromRaw(unsigned char *name);
     std::string getName();
     bool havePointer();
     short getPointer();
-
 };
 
 class UDPSocket;
-class DNSQuestion {
-private:
+class DNSQuestion
+{
+  private:
     std::string qname;
     short qtype;
     short qclass;
-public:
+
+  public:
     friend UDPSocket &UDPSocket::operator>>(DNSQuestion &dnsQuestion);
-    DNSQuestion() {}
+    DNSQuestion() {
+    }
     DNSQuestion(const std::string &qname);
-    char * toPacketFormat(std::string domainName);
-    std::string fromPacketFormat(char *data, char* end);
+    char *toPacketFormat(std::string domainName);
+    std::string fromPacketFormat(char *data, char *end);
     const std::string &getDomainName() const {
         return qname;
     }
@@ -46,9 +50,10 @@ public:
     int getSize() const;
 };
 
-class DNSAnswer {
+class DNSAnswer
+{
 
-public:
+  public:
     bool setRaw(char *data);
 
     int size;
@@ -59,18 +64,19 @@ public:
     in_addr_t getIP();
 };
 
-class DNSAuthoritativeNameServer {
+class DNSAuthoritativeNameServer
+{
     std::string name;
     short type;
     unsigned int timeToLive;
     short dataLenght;
     std::string nameServer;
     int size;
-public:
-    friend UDPSocket &UDPSocket::operator>>(
-        DNSAuthoritativeNameServer &authoritativeNameServer);
-    bool fromRaw(unsigned char *data, int len,
-                     unsigned char *allData);
+
+  public:
+    friend UDPSocket &UDPSocket::
+    operator>>(DNSAuthoritativeNameServer &authoritativeNameServer);
+    bool fromRaw(unsigned char *data, int len, unsigned char *allData);
 
     int getSize();
     std::string getQName();
@@ -78,7 +84,8 @@ public:
     std::string qname;
 };
 
-class DNSAdditionalRecord {
+class DNSAdditionalRecord
+{
     std::string name;
     short type;
     short classType;
@@ -86,9 +93,11 @@ class DNSAdditionalRecord {
     short dataLenght;
     int address;
     int size;
-public:
-    friend UDPSocket &UDPSocket::operator>>(DNSAdditionalRecord &additionalRecord);
-    DNSAdditionalRecord(){
+
+  public:
+    friend UDPSocket &UDPSocket::
+    operator>>(DNSAdditionalRecord &additionalRecord);
+    DNSAdditionalRecord() {
         this->address = 0;
     }
     bool fromRaw(unsigned char *data, int len);
@@ -97,8 +106,9 @@ public:
     unsigned int getIP();
 };
 
-class DNSPacket {
-private:
+class DNSPacket
+{
+  private:
     short identifier;
     bool response;
     char opcode;
@@ -112,20 +122,21 @@ private:
     short authorityRecordCount;
     short additionalRecordCount;
 
-    short generateIdentifier()const;
+    short generateIdentifier() const;
     int parsePointer;
     std::vector<DNSQuestion> questions;
     std::vector<DNSAnswer> answers;
     std::vector<DNSAuthoritativeNameServer> authority;
     std::vector<DNSAdditionalRecord> additional;
-public:
+
+  public:
     friend UDPSocket &UDPSocket::operator>>(DNSPacket &packet);
     DNSPacket();
     short getIdentifier() const {
         return identifier;
     }
-    bool parseRawBuffer(unsigned char * buffer, int size);
-    bool toRawBuffer(void * buffer, int * size);
+    bool parseRawBuffer(unsigned char *buffer, int size);
+    bool toRawBuffer(void *buffer, int *size);
 
     bool isResponse();
 
@@ -144,7 +155,7 @@ public:
         return this->responseCode;
     }
     short getQuestionCount() const {
-        return  this->questionCount;
+        return this->questionCount;
     }
     short getAnswerCount() const {
         return this->answerRecordCount;
@@ -157,11 +168,11 @@ public:
         return this->additionalRecordCount;
     }
     void addQuestion(DNSQuestion dnsQuestion);
-    char * getRaw(int *size)const;
+    char *getRaw(int *size) const;
     void markAsResponse();
     void markAsQuestion();
     bool isOk();
-    std::vector<DNSAdditionalRecord>& getAdditional();
+    std::vector<DNSAdditionalRecord> &getAdditional();
 
     std::vector<DNSAuthoritativeNameServer> getAuthorityNameServers();
 
@@ -170,5 +181,4 @@ public:
 
 std::string hostnameToIP(std::string hostname);
 
-
-#endif //DNS_CHECKER_DNSPACKET_HPP
+#endif // DNS_CHECKER_DNSPACKET_HPP

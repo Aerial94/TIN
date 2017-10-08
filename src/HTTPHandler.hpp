@@ -1,53 +1,51 @@
 #ifndef DNS_CHECKER_HTTPHANDLER_H
 #define DNS_CHECKER_HTTPHANDLER_H
 
-
-#include <string>
 #include <json/json.h>
 #include <json/writer.h>
+#include <string>
 
 class HTTPHandler;
 
 class HTTPHandlerException
 {
-public:
-    enum Type
-    {
-        REQUEST_SYNTAX_ERROR,
-        REQUEST_NO_COMMAND,
-        REQUEST_NO_DOMAINS
-    };
-    const std::string getDescription() const
-    {
+  public:
+    enum Type { REQUEST_SYNTAX_ERROR, REQUEST_NO_COMMAND, REQUEST_NO_DOMAINS };
+    const std::string getDescription() const {
         return this->description;
     }
-    void setDescription(const std::string description)
-    {
+    void setDescription(const std::string description) {
 
         this->description = description;
     }
-private:
+
+  private:
     std::string description;
     friend class HTTPHandler;
-    HTTPHandlerException(HTTPHandlerException::Type type)
-    {
+    HTTPHandlerException(HTTPHandlerException::Type type) {
         this->type = type;
     }
     Type type;
 };
 
-
 class HTTPHandler
 {
-public:
-    HTTPHandler ()
-    {this->star = false;}
-    enum MessageStatus {OK, NO_IN_DATABASE, ALREADY_IN_DATABASE, UNREACHABLE, UNKNOWN};
+  public:
+    HTTPHandler() {
+        this->star = false;
+    }
+    enum MessageStatus {
+        OK,
+        NO_IN_DATABASE,
+        ALREADY_IN_DATABASE,
+        UNREACHABLE,
+        UNKNOWN
+    };
 
     Json::Value testAction(std::string &json);
     std::string getResponse(std::string json);
 
-private:
+  private:
     const std::string addAction = "add";
     const std::string removeAction = "remove";
     const std::string queryAction = "query";
@@ -68,5 +66,4 @@ private:
     bool star;
 };
 
-
-#endif //DNS_CHECKER_HTTPHANDLER_H
+#endif // DNS_CHECKER_HTTPHANDLER_H

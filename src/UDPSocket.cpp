@@ -36,10 +36,9 @@ UDPSocket &UDPSocket::operator>>(std::string &data) {
     char buffer[MAX_UDP_PACKET_SIZE];
     socklen_t size = this->internalAddress.getSize();
     ssize_t recSize;
-    recSize = recvfrom(this->socketFileDescriptor, buffer,
-                       MAX_UDP_PACKET_SIZE, 0,
-                       this->internalAddress.toInternalAddressStructPointer(),
-                       &size);
+    recSize =
+        recvfrom(this->socketFileDescriptor, buffer, MAX_UDP_PACKET_SIZE, 0,
+                 this->internalAddress.toInternalAddressStructPointer(), &size);
     buffer[recSize] = '\0';
     data.append(buffer);
     return *this;
@@ -49,11 +48,9 @@ UDPSocket &UDPSocket::recive(void *data, int size) {
     socklen_t aSize = this->internalAddress.getSize();
     int recSize = 0;
     while (recSize < size) {
-        int status = recvfrom(this->socketFileDescriptor,
-                              (char *) data + recSize,
-                              size, 0,
-                              this->internalAddress.toInternalAddressStructPointer(),
-                              &aSize);
+        int status = recvfrom(
+            this->socketFileDescriptor, (char *)data + recSize, size, 0,
+            this->internalAddress.toInternalAddressStructPointer(), &aSize);
         if (status > 0)
             return *this;
         else if (status < 0) {
@@ -65,9 +62,10 @@ UDPSocket &UDPSocket::recive(void *data, int size) {
 }
 
 UDPSocket &UDPSocket::send(void *data, int size) {
-    ssize_t status = sendto(this->socketFileDescriptor, data, size, 0,
-                            this->internalAddress.toInternalAddressStructPointer(),
-                            this->internalAddress.getSize());
+    ssize_t status =
+        sendto(this->socketFileDescriptor, data, size, 0,
+               this->internalAddress.toInternalAddressStructPointer(),
+               this->internalAddress.getSize());
     return *this;
 }
 
@@ -81,7 +79,7 @@ UDPSocket &UDPSocket::operator<<(const DNSPacket &packet) {
 
 UDPSocket &UDPSocket::operator>>(DNSPacket &packet) {
     this->setTimeout(0, 500000);
-    unsigned char *data = (unsigned char *) this->read(MAX_UDP_PACKET_SIZE);
+    unsigned char *data = (unsigned char *)this->read(MAX_UDP_PACKET_SIZE);
     packet.parseRawBuffer(data, MAX_UDP_PACKET_SIZE);
     return *this;
 }
@@ -89,10 +87,9 @@ UDPSocket &UDPSocket::operator>>(DNSPacket &packet) {
 char UDPSocket::readByte() {
     char byte;
     socklen_t aSize = this->internalAddress.getSize();
-    ssize_t status = recvfrom(this->socketFileDescriptor, &byte,
-                              1, 0,
-                              this->internalAddress.toInternalAddressStructPointer(),
-                              &aSize);
+    ssize_t status = recvfrom(
+        this->socketFileDescriptor, &byte, 1, 0,
+        this->internalAddress.toInternalAddressStructPointer(), &aSize);
     if (status == 1) {
         return byte;
     }
@@ -108,11 +105,10 @@ void *UDPSocket::read(unsigned int size) {
 
     ssize_t sum_recived = 0;
     while (sum_recived < size) {
-        ssize_t recived = recvfrom(this->socketFileDescriptor,
-                                   (char *) buffer + sum_recived,
-                                   size - sum_recived, 0,
-                                   this->internalAddress.toInternalAddressStructPointer(),
-                                   &aSize);
+        ssize_t recived = recvfrom(
+            this->socketFileDescriptor, (char *)buffer + sum_recived,
+            size - sum_recived, 0,
+            this->internalAddress.toInternalAddressStructPointer(), &aSize);
 
         if (recived > 0)
             sum_recived += recived;
@@ -150,31 +146,31 @@ UDPSocket &UDPSocket::operator>>(DNSQuestion &dnsQuestion) {
     return *this;
 }
 
-UDPSocket &UDPSocket::operator>>(
-        DNSAuthoritativeNameServer &authoritativeNameServer) {
+UDPSocket &UDPSocket::
+operator>>(DNSAuthoritativeNameServer &authoritativeNameServer) {
     authoritativeNameServer.size = 0;
     if (this->readByte() & (0x3 << 6)) {
         authoritativeNameServer.size += 2;
         this->readByte();
     }
-    //type
+    // type
     this->readByte();
     this->readByte();
     authoritativeNameServer.size += 2;
 
-    //class
+    // class
     this->readByte();
     this->readByte();
     authoritativeNameServer.size += 2;
 
-    //ttl
+    // ttl
     this->readByte();
     this->readByte();
     this->readByte();
     this->readByte();
     authoritativeNameServer.size += 4;
 
-    //string size;
+    // string size;
     authoritativeNameServer.size += (this->readByte() << 8) | this->readByte();
     authoritativeNameServer.size += 2;
 
@@ -187,18 +183,18 @@ UDPSocket &UDPSocket::operator>>(DNSAdditionalRecord &additionalRecord) {
         additionalRecord.size += 2;
         this->readByte();
     }
-    //type
+    // type
     bool ipv4 = false;
-    if (not (this->readByte() == 0x0 and this->readByte() == 0x1c))
+    if (not(this->readByte() == 0x0 and this->readByte() == 0x1c))
         ipv4 = true;
     additionalRecord.size += 2;
 
-    //class
+    // class
     this->readByte();
     this->readByte();
     additionalRecord.size += 2;
 
-    //ttl
+    // ttl
     this->readByte();
     this->readByte();
     this->readByte();
@@ -209,9 +205,9 @@ UDPSocket &UDPSocket::operator>>(DNSAdditionalRecord &additionalRecord) {
     additionalRecord.size += 2;
 
     if (ipv4) {
-        additionalRecord.address =
-                this->readByte() << 24 | this->readByte() << 16 |
-                this->readByte() << 8 | this->readByte();
+        additionalRecord.address = this->readByte() << 24 |
+                                   this->readByte() << 16 |
+                                   this->readByte() << 8 | this->readByte();
     }
     return *this;
 }

@@ -23,16 +23,15 @@ TCPSocket::~TCPSocket() {
 
 int TCPSocket::connect(SocketAddress &address) {
     int status =
-            ::connect(this->socketFileDescriptor,
-                      address.toInternalAddressStructPointer(),
-                      address.getSize());
+        ::connect(this->socketFileDescriptor,
+                  address.toInternalAddressStructPointer(), address.getSize());
     return status;
 }
 
 int TCPSocket::bind(const SocketAddress &address) {
     int result =
-            ::bind(this->socketFileDescriptor,
-                   address.toInternalAddressStructPointer(), address.getSize());
+        ::bind(this->socketFileDescriptor,
+               address.toInternalAddressStructPointer(), address.getSize());
     return result;
 }
 
@@ -47,8 +46,7 @@ int TCPSocket::accept() {
         FD_ZERO(&rfds);
         FD_SET(this->socketFileDescriptor, &rfds);
         int retval = select(this->socketFileDescriptor + 1, &rfds, nullptr,
-                            nullptr,
-                            &timeout);
+                            nullptr, &timeout);
         timeout = this->timeout;
         if (retval > 0) {
             return ::accept(this->socketFileDescriptor, 0, 0);
@@ -101,7 +99,6 @@ std::string TCPSocket::read_from_socket(unsigned int size) {
     return data;
 }
 
-
 void TCPSocket::serveForever(int port) {
     this->bindAll(port);
     this->listen();
@@ -125,12 +122,12 @@ char TCPSocket::readByte() {
     }
     ssize_t receive_size = 0;
     while (1) {
-        receive_size = recv(this->socketFileDescriptor, &(this->buffer), 4096,
-                           0);
+        receive_size =
+            recv(this->socketFileDescriptor, &(this->buffer), 4096, 0);
         if (receive_size > 0) {
             this->bufferNotEmpty = true;
             this->currentReadPos = 0;
-            this->bufferSize = (int) receive_size;
+            this->bufferSize = (int)receive_size;
             return this->readByte();
         }
         else if (receive_size <= 0) {

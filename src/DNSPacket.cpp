@@ -13,25 +13,25 @@ bool DNSPacket::parseRawBuffer(unsigned char *buffer, int size) {
     this->parsePointer = 0;
     this->identifier = (buffer[0] << 8) | buffer[1];
     short flags = (buffer[2] << 8) | buffer[3];
-    this->response = (bool) (flags & (1 << 15));
-    this->answerIsAuthoritative = (bool) (flags & (1 << 10));
-    this->recursionDesired = (bool) (flags & (1 << 8));
-    this->recursionAvailable = (bool) (flags & (1 << 7));
-    this->responseCode = (char) (flags & 0xF);
-    this->questionCount = (short) buffer[4] << 8 | buffer[5];
+    this->response = (bool)(flags & (1 << 15));
+    this->answerIsAuthoritative = (bool)(flags & (1 << 10));
+    this->recursionDesired = (bool)(flags & (1 << 8));
+    this->recursionAvailable = (bool)(flags & (1 << 7));
+    this->responseCode = (char)(flags & 0xF);
+    this->questionCount = (short)buffer[4] << 8 | buffer[5];
     this->answerRecordCount = buffer[6] << 8 | buffer[7];
     this->authorityRecordCount = buffer[8] << 8 | buffer[9];
     this->additionalRecordCount = buffer[10] << 8 | buffer[11];
     int i = 12;
     for (int j = 0; j < this->questionCount; j++) {
         DNSQuestion dnsQuestion;
-        int size = dnsQuestion.setRaw((char *) &buffer[i]);
+        int size = dnsQuestion.setRaw((char *)&buffer[i]);
         this->questions.push_back(dnsQuestion);
         i += size;
     }
     for (int j = 0; j < this->answerRecordCount; j++) {
         DNSAnswer answer;
-        bool ip = answer.setRaw((char *) &buffer[i]);
+        bool ip = answer.setRaw((char *)&buffer[i]);
         if (ip) {
             this->answers.push_back(answer);
         }
@@ -102,9 +102,8 @@ void DNSPacket::markAsQuestion() {
     this->response = false;
 }
 
-
 char *DNSQuestion::getRaw() const {
-    char *rawData = (char *) std::malloc(1 + this->qname.length() + 1 + 4);
+    char *rawData = (char *)std::malloc(1 + this->qname.length() + 1 + 4);
     int i = 0;
     std::string domain = this->qname;
     size_t pos;
@@ -113,7 +112,7 @@ char *DNSQuestion::getRaw() const {
         pos = domain.find_first_of(".");
         std::string substr = domain.substr(0, pos);
         len = substr.length();
-        rawData[i] = (char) len;
+        rawData[i] = (char)len;
         std::memcpy(&rawData[i + 1], substr.c_str(), len);
         domain.erase(0, len + 1);
         i += len + 1;
@@ -129,7 +128,6 @@ char *DNSQuestion::getRaw() const {
 char *DNSQuestion::toPacketFormat(std::string domainName) {
     this->qname = domainName;
 }
-
 
 DNSQuestion::DNSQuestion(const std::string &qname) {
     this->qname = qname;
@@ -178,7 +176,6 @@ std::vector<DNSAnswer> DNSPacket::getAnswers() {
     return this->answers;
 }
 
-
 bool DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len,
                                          unsigned char *allData) {
     this->size = 0;
@@ -194,12 +191,12 @@ bool DNSAuthoritativeNameServer::fromRaw(unsigned char *data, int len,
     while (data[i] != 0) {
         size_t block_size = data[i];
         if ((block_size & (3 << 6)) == (3 << 6)) {
-            int offset = (int) (((block_size & (~(3 << 6))) << 8) | data[++i]);
+            int offset = (int)(((block_size & (~(3 << 6))) << 8) | data[++i]);
             while (allData[offset] != 0) {
                 size_t block_size = allData[offset++];
                 if ((block_size & (3 << 6)) == (3 << 6)) {
-                    offset = (int) (((block_size & (~(3 << 6))) << 8) |
-                                    allData[offset]);
+                    offset = (int)(((block_size & (~(3 << 6))) << 8) |
+                                   allData[offset]);
                     continue;
                 }
                 for (int j = 0; j < block_size; j++) {
@@ -233,16 +230,15 @@ std::string DNSAuthoritativeNameServer::getQName() {
     return this->qname;
 }
 
-
 bool DNSAdditionalRecord::fromRaw(unsigned char *data, int len) {
     this->size = 0;
-    if ((data [0] & (3 << 6)) == (3 << 6)) {
+    if ((data[0] & (3 << 6)) == (3 << 6)) {
         size += 2;
     }
     size += 4;
     size += 4;
     size += 2;
-    this->address = *(int *) &data[size];
+    this->address = *(int *)&data[size];
     size += (data[10] << 8) | data[11];
     if (data[2] == 0x0 and data[3] == 0x1c) {
         return false;
@@ -259,7 +255,7 @@ in_addr_t DNSAdditionalRecord::getIP() {
 }
 
 char *FQDN::toRaw() {
-    char *rawData = (char *) std::malloc(1 + this->name.length());
+    char *rawData = (char *)std::malloc(1 + this->name.length());
     int i = 0;
     std::string domain = this->name;
     size_t pos;
@@ -268,7 +264,7 @@ char *FQDN::toRaw() {
         pos = domain.find_first_of(".");
         std::string substr = domain.substr(0, pos);
         len = substr.length();
-        rawData[i] = (char) len;
+        rawData[i] = (char)len;
         std::memcpy(&rawData[i + 1], substr.c_str(), len);
         domain.erase(0, len + 1);
         i += len + 1;
@@ -282,7 +278,7 @@ void FQDN::fromRaw(unsigned char *raw) {
     int i = 0;
     while (raw[i] != 0) {
         if (raw[i] & 3 << 6) {
-            //pointer case
+            // pointer case
             this->pointer = raw[i + 1];
             break;
         }
@@ -295,7 +291,6 @@ void FQDN::fromRaw(unsigned char *raw) {
             this->name += ".";
         }
     }
-
 }
 
 std::string FQDN::getName() {
@@ -312,15 +307,16 @@ short FQDN::getPointer() {
 
 bool DNSAnswer::setRaw(char *data) {
     this->size = 0;
-    if ((data [0] & (3 << 6)) == (3 << 6)) {
+    if ((data[0] & (3 << 6)) == (3 << 6)) {
         size += 2;
     }
     size += 4;
     size += 4;
     size += 2;
-    this->address = *(int *) &data[size];
+    this->address = *(int *)&data[size];
     size += (data[10] << 8) | data[11];
-    if (data[2] == 0x0 and data[3] == 0x01 and data[4] == 0x0 and data[5] == 0x1) {
+    if (data[2] == 0x0 and data[3] == 0x01 and data[4] == 0x0 and
+        data[5] == 0x1) {
         return true;
     }
     return false;
@@ -334,24 +330,21 @@ in_addr_t DNSAnswer::getIP() {
     return this->address;
 }
 
-
 std::string hostnameToIP(std::string hostname) {
     {
         struct hostent *he;
         struct in_addr **addr_list;
         int i;
 
-        if ( (he = gethostbyname( hostname.c_str()) ) == NULL)
-        {
+        if ((he = gethostbyname(hostname.c_str())) == NULL) {
             TimeoutException exception;
             throw exception;
         }
 
-        addr_list = (struct in_addr **) he->h_addr_list;
+        addr_list = (struct in_addr **)he->h_addr_list;
 
-        for(i = 0; addr_list[i] != NULL; i++)
-        {
-            char * ip = inet_ntoa(*addr_list[i]);
+        for (i = 0; addr_list[i] != NULL; i++) {
+            char *ip = inet_ntoa(*addr_list[i]);
             return std::string(ip);
         }
     }

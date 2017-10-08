@@ -10,14 +10,14 @@
 
 class SocketAddress
 {
-private:
+  private:
     struct sockaddr_in internalAddress;
     void init();
 
-public:
+  public:
     SocketAddress();
-    SocketAddress(const std::string & association);
-    SocketAddress(const char * association);
+    SocketAddress(const std::string &association);
+    SocketAddress(const char *association);
     SocketAddress(int address, short port);
     virtual ~SocketAddress();
 
@@ -28,7 +28,7 @@ public:
     int setAssociation(std::string association);
     short getPort();
     std::string getAddress();
-    struct sockaddr * toInternalAddressStructPointer() const;
+    struct sockaddr *toInternalAddressStructPointer() const;
     unsigned int getSize() const;
 };
 

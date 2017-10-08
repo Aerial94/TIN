@@ -1,21 +1,16 @@
 #include "Domain.hpp"
 
-Domain::Domain(std::string dName)
-{
+Domain::Domain(std::string dName) {
     this->domainName = dName;
     this->status = DomainStatus::FOLLOWED_BUT_UNCHECKED;
     this->timestamp = 0;
 }
 
-
-Domain::DomainStatus Domain::getStatus()
-{
+Domain::DomainStatus Domain::getStatus() {
     return this->status;
 }
 
-
-void Domain::setStatus(DomainStatus status)
-{
+void Domain::setStatus(DomainStatus status) {
     if (this->status != status) {
         /*
          * If status has changed then update timestamp
@@ -25,9 +20,7 @@ void Domain::setStatus(DomainStatus status)
     this->status = status;
 }
 
-
-std::string Domain::getDomainName()
-{
+std::string Domain::getDomainName() {
     return this->domainName;
 }
 
@@ -42,7 +35,6 @@ std::string Domain::getIP() {
 void Domain::setTimestamp(time_t timestamp) {
     this->timestamp = timestamp;
 }
-
 
 time_t Domain::getTimestamp() const {
     return this->timestamp;

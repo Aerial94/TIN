@@ -1,34 +1,34 @@
 #include "HTTPServer.hpp"
 #include "HTTPPacket.hpp"
-#include <thread>
-#include <sstream>
 #include <functional>
+#include <sstream>
 #include <stdlib.h>
-
+#include <thread>
 
 HTTPServer::HTTPServer() {
     Configuration configuration = Configuration::getInstance();
     SocketAddress address;
     if (not address.setAddress(configuration.getHttpServerAddress())) {
-        Logger::getInstance().logInfo("Server", "Cant listen on address: '" +
-                                                configuration.getHttpServerAddress() +
-                                                "' beacause it seems to be invalid");
+        Logger::getInstance().logInfo("Server",
+                                      "Cant listen on address: '" +
+                                          configuration.getHttpServerAddress() +
+                                          "' beacause it seems to be invalid");
         std::cout << "Cant listen on address '" +
-                     configuration.getHttpServerAddress() +
-                     "' beacause it seems to be invalid\n";
+                         configuration.getHttpServerAddress() +
+                         "' beacause it seems to be invalid\n";
         std::exit(-1);
     }
     address.setPort(configuration.getHttpServerPort());
     this->socket.setReuseAddress();
     if (this->socket.bind(address) < 0) {
-        Logger::getInstance().logInfo("Server", "Cant bind address: " +
-                                                configuration.getHttpServerAddress() +
-                                                ":" + std::to_string(
-                configuration.getHttpServerPort()));
+        Logger::getInstance().logInfo(
+            "Server", "Cant bind address: " +
+                          configuration.getHttpServerAddress() + ":" +
+                          std::to_string(configuration.getHttpServerPort()));
         std::cout << "Cant bind address " +
-                     configuration.getHttpServerAddress() +
-                     ":" + std::to_string(
-                configuration.getHttpServerPort()) + "\n";
+                         configuration.getHttpServerAddress() + ":" +
+                         std::to_string(configuration.getHttpServerPort()) +
+                         "\n";
         std::exit(-1);
     }
     this->socket.listen(configuration.getHttpServerMaxThreads());
@@ -44,8 +44,7 @@ void HTTPServer::listen() {
             this->semaphore.wait();
             std::thread thread(&HTTPServer::response, this, clientSocket);
             thread.detach();
-        }
-        catch (TimeoutException &e) {
+        } catch (TimeoutException &e) {
             continue;
         }
     }
@@ -55,17 +54,17 @@ void HTTPServer::response(int clientSocket) {
     Logger::getInstance().logDebug("Server", "Getting data...");
     TCPSocket tcpSocket(clientSocket);
     tcpSocket.setTimeout(
-            Configuration::getInstance().getHttpServerReadTimeout(), 0);
+        Configuration::getInstance().getHttpServerReadTimeout(), 0);
     HTTPPacket packet;
     std::string json_response, response;
     std::string line, json;
     while (true) {
         try {
             line = tcpSocket.readLine();
-        }
-        catch (TimeoutException &e) {
-            Logger::getInstance().logWarning("Server",
-                                             "Timeout while reciving http packet headers from client");
+        } catch (TimeoutException &e) {
+            Logger::getInstance().logWarning(
+                "Server",
+                "Timeout while reciving http packet headers from client");
             this->semaphore.notify();
             return;
         }
@@ -77,10 +76,10 @@ void HTTPServer::response(int clientSocket) {
         Logger::getInstance().logDebug("Server", "Valid request");
         try {
             json = tcpSocket.read_from_socket(packet.get_content_length());
-        }
-        catch (TimeoutException &e) {
-            Logger::getInstance().logWarning("Server",
-                                             "Timeout while reciving http packet json body from client");
+        } catch (TimeoutException &e) {
+            Logger::getInstance().logWarning(
+                "Server",
+                "Timeout while reciving http packet json body from client");
             this->semaphore.notify();
             return;
         }
@@ -89,10 +88,9 @@ void HTTPServer::response(int clientSocket) {
         try {
             json_response = handler.getResponse(json);
             response = valid_request_function(json_response);
-        }
-        catch (HTTPHandlerException &e) {
+        } catch (HTTPHandlerException &e) {
             Logger::getInstance().logWarning("Server", "Invalid json: " +
-                                                       e.getDescription());
+                                                           e.getDescription());
             response = invalid_request_function();
         }
     }
@@ -104,12 +102,11 @@ void HTTPServer::response(int clientSocket) {
     this->semaphore.notify();
 }
 
-
 std::string HTTPServer::valid_request_function(std::string &response_json) {
     std::string response = this->valid_request;
     char buf[1000];
     time_t now = time(0);
-    struct tm * tm = gmtime(&now);
+    struct tm *tm = gmtime(&now);
     strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", tm);
     response.insert(0, "\r\n");
     response.insert(0, buf);
@@ -126,14 +123,13 @@ std::string HTTPServer::invalid_request_function() {
     std::string response = this->invalid_request;
     char buf[1000];
     time_t now = time(0);
-    struct tm * tm = gmtime(&now);
+    struct tm *tm = gmtime(&now);
     strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", tm);
     response.insert(0, "\r\n");
     response.insert(0, buf);
     response.insert(0, "Date: ");
     response.insert(0, "HTTP/1.1 418 I'm teapot\r\n");
     return response;
-
 }
 
 void HTTPServer::stop() {

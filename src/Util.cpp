@@ -1,10 +1,10 @@
 #include "Util.hpp"
 #include "Logger.hpp"
-#include <sys/types.h>
-#include <unistd.h>
+#include <cstdio>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <cstdio>
+#include <sys/types.h>
+#include <unistd.h>
 
 void Util::deamonize() {
     std::puts("deamonizing...");
@@ -18,7 +18,7 @@ void Util::deamonize() {
     /* If we got a good PID, then
        we can exit the parent process. */
     if (pid > 0) {
-        FILE * f = fopen("dns-checker.pid", "w");
+        FILE *f = fopen("dns-checker.pid", "w");
         fprintf(f, "%d\n", pid);
         fclose(f);
         exit(EXIT_SUCCESS);
@@ -27,13 +27,15 @@ void Util::deamonize() {
 
     pid_t sid = setsid();
     if (sid < 0) {
-        Logger::getInstance().logWarning("deamonize", "Cant beacome session leader");
+        Logger::getInstance().logWarning("deamonize",
+                                         "Cant beacome session leader");
         exit(EXIT_FAILURE);
     }
 
     /* Change the current working directory */
     if ((chdir("/")) < 0) {
-        Logger::getInstance().logWarning("deamonize", "Cant change working directory to /");
+        Logger::getInstance().logWarning("deamonize",
+                                         "Cant change working directory to /");
         exit(EXIT_FAILURE);
     }
 
@@ -42,4 +44,3 @@ void Util::deamonize() {
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
 }
-

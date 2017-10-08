@@ -1,4 +1,5 @@
 #include "Logger.hpp"
+#include <iostream>
 
 Logger::Logger(LogLevel logLevel) : logLevel(logLevel) {
     this->logFile.open("log.txt", std::ios_base::app);
@@ -23,7 +24,6 @@ void Logger::logDebug(std::string moduleName, std::string message) {
         return;
     std::lock_guard<std::mutex> guard(this->mutex);
     this->appendToLogFile("[DEBUG]", moduleName, message);
-
 }
 
 Logger::~Logger() {
@@ -46,6 +46,14 @@ void Logger::appendToLogFile(std::string level, std::string moduleName,
         this->logFile << "\n";
         this->logFile.flush();
     }
+    std::cout << this->getCurrentTimeDate();
+    std::cout << " ";
+    std::cout << level;
+    std::cout << " ";
+    std::cout << "(" << moduleName << ")";
+    std::cout << " ";
+    std::cout << message;
+    std::cout << "\n";
 }
 
 std::string Logger::getCurrentTimeDate() {
@@ -74,7 +82,6 @@ Logger &Logger::getInstance() {
     return logger;
 }
 
-
 Logger::Logger() {
     this->disabled = false;
     this->logFile.open("log.txt", std::ios_base::app);
@@ -91,4 +98,3 @@ void Logger::stop() {
     this->disabled = true;
     this->close();
 }
-

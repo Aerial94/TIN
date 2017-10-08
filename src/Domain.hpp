@@ -4,14 +4,16 @@
 
 class Domain
 {
-public:
-    enum DomainStatus {FOLLOWED, FOLLOWED_BUT_UNCHECKED, NONEXISTENT};
-private:
+  public:
+    enum DomainStatus { FOLLOWED, FOLLOWED_BUT_UNCHECKED, NONEXISTENT };
+
+  private:
     std::string domainName;
     DomainStatus status;
     std::string ip;
     time_t timestamp;
-public:
+
+  public:
     Domain(std::string dName);
     DomainStatus getStatus();
     void setStatus(DomainStatus status);
@@ -21,8 +23,6 @@ public:
 
     void setTimestamp(time_t timestamp);
     time_t getTimestamp() const;
-
 };
 
-
-#endif //DNS_CHECKER_DOMAIN_H
+#endif // DNS_CHECKER_DOMAIN_H

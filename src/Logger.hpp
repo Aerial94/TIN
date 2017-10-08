@@ -1,18 +1,19 @@
 #ifndef DNS_CHECKER_LOGGER_HPP
 #define DNS_CHECKER_LOGGER_HPP
 
-#include <string>
-#include <fstream>
 #include <ctime>
+#include <fstream>
 #include <mutex>
+#include <string>
 
-class Logger {
-public:
+class Logger
+{
+  public:
     Logger();
-    enum LogLevel {NONE, INFO, WARNING, DEBUG};
+    enum LogLevel { NONE, INFO, WARNING, DEBUG };
     Logger(LogLevel logLevel);
     ~Logger();
-    static Logger& getInstance();
+    static Logger &getInstance();
     void logInfo(std::string moduleName, std::string message);
     void logWarning(std::string moduleName, std::string message);
     void logDebug(std::string moduleName, std::string message);
@@ -20,7 +21,8 @@ public:
     void stop();
     void flush();
     void close();
-private:
+
+  private:
     bool disabled;
     std::mutex mutex;
     LogLevel logLevel;
@@ -30,6 +32,5 @@ private:
     void appendToLogFile(std::string level, std::string moduleName,
                          std::string message);
 };
-
 
 #endif

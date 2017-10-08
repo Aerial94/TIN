@@ -4,16 +4,17 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 
-class TimeoutException: public std::exception{};
+class TimeoutException : public std::exception
+{};
 
 class Socket
 {
-protected:
+  protected:
     int socketFileDescriptor;
     SocketAddress internalAddress;
     struct timeval timeout;
 
-public:
+  public:
     Socket();
     virtual ~Socket();
     void setTimeout(long int sec, long int usec);

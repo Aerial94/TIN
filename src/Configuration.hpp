@@ -1,14 +1,14 @@
 #ifndef DNS_CHECKER_CONFIGURATION_HPP
 #define DNS_CHECKER_CONFIGURATION_HPP
-#include <string>
-#include <json/json.h>
 #include "Logger.hpp"
+#include <json/json.h>
+#include <string>
 
 class Configuration;
 
 class ConfigurationException
 {
-public:
+  public:
     enum Type {
         NO_CONFIG_FILE,
         CONFIG_FILE_SYNTAX_ERROR,
@@ -20,7 +20,8 @@ public:
     void setDescription(const std::string description) {
         this->description = description;
     }
-private:
+
+  private:
     std::string description;
     friend class Configuration;
     ConfigurationException(ConfigurationException::Type type) {
@@ -31,11 +32,13 @@ private:
     Type type;
 };
 
-class Configuration {
-public:
+class Configuration
+{
+  public:
     Configuration();
-    virtual ~Configuration() { }
-    static Configuration& getInstance();
+    virtual ~Configuration() {
+    }
+    static Configuration &getInstance();
 
     short getHttpServerPort() const {
         return httpServerPort;
@@ -64,9 +67,9 @@ public:
         return readyToUse;
     }
 
-    void parse(std::string fileName);
-    void parse();
-private:
+    void parse(std::string fileName = "configuration.json");
+
+  private:
     bool readyToUse;
     std::string httpServerAddress;
     /*Port is in little endian, must be converted to use in socket*/
@@ -80,5 +83,4 @@ private:
     void parseLogLevel(const Json::Value &root);
 };
 
-
-#endif //DNS_CHECKER_CONFIGURATION_HPP
+#endif // DNS_CHECKER_CONFIGURATION_HPP

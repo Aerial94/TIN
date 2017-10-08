@@ -1,21 +1,25 @@
 #ifndef DNS_CHECKER_HTTPSERVER_H
 #define DNS_CHECKER_HTTPSERVER_H
 
-#include "HTTPHandler.hpp"
 #include "Configuration.hpp"
+#include "HTTPHandler.hpp"
 #include "TCPSocket.hpp"
+#include <atomic>
+#include <condition_variable>
 #include <list>
 #include <mutex>
-#include <condition_variable>
 #include <thread>
-#include <atomic>
 
-class Semaphore {
-public:
+class Semaphore
+{
+  public:
+    Semaphore() {
+        this->count = 0;
+    }
 
-    Semaphore() { this->count = 0; }
-
-    Semaphore(int count) { this->count = count; }
+    Semaphore(int count) {
+        this->count = count;
+    }
 
     void notify() {
         std::unique_lock<std::mutex> lck(mtx);
@@ -36,15 +40,15 @@ public:
         this->count = count;
     }
 
-private:
+  private:
     std::mutex mtx;
     std::condition_variable cv;
     int count;
 };
 
-
-class HTTPServer {
-public:
+class HTTPServer
+{
+  public:
     HTTPServer();
 
     void listen();
@@ -53,17 +57,17 @@ public:
 
     void run();
 
-private:
+  private:
     Semaphore semaphore;
-    const char* invalid_request = "Server: dns-checker\r\n"
-            "Connection: Closed\r\n"
-            "Content-Length: 0\r\n"
-            "\r\n";
+    const char *invalid_request = "Server: dns-checker\r\n"
+                                  "Connection: Closed\r\n"
+                                  "Content-Length: 0\r\n"
+                                  "\r\n";
 
-    const char * valid_request = "Server: dns-checker\r\n"
-            "Connection: Closed\r\n"
-            "Content-Type: application/json\r\n"
-            "Content-Length: {0}\r\n";
+    const char *valid_request = "Server: dns-checker\r\n"
+                                "Connection: Closed\r\n"
+                                "Content-Type: application/json\r\n"
+                                "Content-Length: {0}\r\n";
     TCPSocket socket;
 
     void response(int clientSocket);
@@ -76,5 +80,4 @@ private:
     std::atomic_bool stopThread;
 };
 
-
-#endif //DNS_CHECKER_HTTPSERVER_H
+#endif // DNS_CHECKER_HTTPSERVER_H
